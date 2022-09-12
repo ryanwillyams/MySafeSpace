@@ -1,8 +1,12 @@
+from re import L
+import os
+import sys
+import subprocess
 import time
+import passwdReq
 
 if __name__ == "__main__":
     print("MySafeSpace")
-
     option = ""
     while True:
         # Different Security options
@@ -22,7 +26,7 @@ if __name__ == "__main__":
 
         match option:
             case "1":
-                print("Not yet implemented.")
+                passwdReq.passwdReqPromp()
             case "2":
                 print("Not yet implemented.")
             case "3":
