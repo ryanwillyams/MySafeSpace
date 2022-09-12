@@ -3,12 +3,7 @@ import sys
 import subprocess
 
 def passwdReqs(minlength, upper, lower, digit, other):
-    if os.geteuid() != 0:
-        print("Not root. Enter your password.")
-        subprocess.call(['sudo', 'python3', *sys.argv])
-        sys.exit()
-
-    parameters = 's/^password\trequisite\t\t\tpam_pwquality.so retry=3 .*$/password\trequisite\t\t\tpam_pwquality.so retry=3 ' + minlength + " " + upper + " " + lower + " " + digit + " " + other + '/'
+    parameters = 's/^password\trequisite\t\t\tpam_pwquality.so.*$/password\trequisite\t\t\tpam_pwquality.so retry=3 ' + minlength + " " + upper + " " + lower + " " + digit + " " + other + '/'
     subprocess.run(["perl", "-p", "-i.orig", "-e", parameters, "/etc/pam.d/common-password"])        
 
 def passwdReqPromp():
