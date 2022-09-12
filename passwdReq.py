@@ -1,5 +1,3 @@
-import os
-import sys
 import subprocess
 import functions
 
@@ -35,6 +33,7 @@ def passwdComplex():
     lower = 'lcredit=0'
     digit = 'dcredit=0'
     other = 'ocredit=0'
+
     answer = input("Require uppercase?(y/n): ")
     if answer == "y":
         upper = "ucredit=-1"
@@ -47,11 +46,12 @@ def passwdComplex():
     answer = input("Require special characters?(y/n): ")
     if answer == "y":
         other = "ocredit=-1"
+    remember = "remember=" + input("How many passwords to remember: ")
 
-    passwdReqs(minlength, upper, lower, digit, other)
+    passwdReqs(minlength, upper, lower, digit, other, remember)
 
-def passwdReqs(minlength, upper, lower, digit, other):
-    parameters = 's/^password\trequisite\t\t\tpam_pwquality.so.*$/password\trequisite\t\t\tpam_pwquality.so retry=3 ' + minlength + " " + upper + " " + lower + " " + digit + " " + other + '/'
+def passwdReqs(minlength, upper, lower, digit, other, remember):
+    parameters = 's/^password\trequisite\t\t\tpam_pwquality.so.*$/password\trequisite\t\t\tpam_pwquality.so retry=3 ' + minlength + " " + upper + " " + lower + " " + digit + " " + other + " " + remember + '/'
     subprocess.run(["perl", "-p", "-i.orig", "-e", parameters, "/etc/pam.d/common-password"])        
 
 def passwdExpir():
