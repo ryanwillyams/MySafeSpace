@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import functions
 
 def passwdReqPromp():
     option = ""
@@ -73,3 +74,9 @@ def passwdExpirConfig(maxDay, minDay, warn):
     subprocess.run(["perl", "-p", "-i.orig", "-e", parameter, "/etc/login.defs"])
     parameter = "s/^PASS_WARN_AGE\t.*$/PASS_WARN_AGE\t" + warn + "/"
     subprocess.run(["perl", "-p", "-i.orig", "-e", parameter, "/etc/login.defs"])
+
+    userList = functions.listUsers()
+    for user in userList:
+        subprocess.run(["chage", "-M", maxDay, user])
+        subprocess.run(["chage", "-m", minDay, user])
+        subprocess.run(["chage", "-W", warn, user])
