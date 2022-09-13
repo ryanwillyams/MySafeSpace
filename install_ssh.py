@@ -75,13 +75,6 @@ def get_ip():
 
 
 def ssh_prompt():
-    # Get the name of the current user and remove any newlines
-    user = os.popen('id -u -n')
-    user = user.read()
-    user = user.strip()  
-    # TODO: Remove when code is complete - for testing only 
-    #print("\nUsername is: " + user)
-
     option = ""
     while option != "0":
         option = input("------------------------------------\n"
