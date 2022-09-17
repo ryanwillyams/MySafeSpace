@@ -6,7 +6,7 @@ import time
 
 import passwdReq
 import install_ssh
-
+import change_passwds
 
 if __name__ == "__main__":
     print("MySafeSpace")
@@ -31,7 +31,7 @@ if __name__ == "__main__":
             case "1":
                 passwdReq.passwdReqPromp()
             case "2":
-                print("Not yet implemented.")
+                change_passwds.passwds_prompt()
             case "3":
                 print("Not yet implemented.")
             case "4":
