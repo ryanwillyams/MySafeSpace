@@ -3,7 +3,10 @@ import os
 import sys
 import subprocess
 import time
+
 import passwdReq
+import install_ssh
+
 
 if __name__ == "__main__":
     print("MySafeSpace")
@@ -32,7 +35,7 @@ if __name__ == "__main__":
             case "3":
                 print("Not yet implemented.")
             case "4":
-                print("Not yet implemented.")
+                install_ssh.ssh_prompt()
             case "5":
                 print("Not yet implemented.")
             case "6":
