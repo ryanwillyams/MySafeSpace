@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget
 
 from Views.ResourcesPage import ResourcesPage
-from Views.SecurePage import SecurePage
+from Views.HardenPage import HardenPage
 from Views.ServicesPage import ServicesPage
 
 
@@ -21,14 +21,14 @@ class MainWindow(QMainWindow):
         tabs = QTabWidget()
         tabs.setMovable(False)
         
-        securePage = SecurePage()
+        hardenPage = HardenPage()
         servicesPage = ServicesPage()
         resourcesPage = ResourcesPage()
 
         tab_views = {
-            'SecurePage':securePage,
-            'ServicesPage':servicesPage,
-            'ResourcesPage':resourcesPage
+            'Harden': hardenPage,
+            'Services': servicesPage,
+            'Resources': resourcesPage
         }
 
         for view_name,view in tab_views.items():
