@@ -6,6 +6,8 @@ import time
 
 import passwdReq
 import install_ssh
+import change_passwds
+import sudo_priv
 
 
 if __name__ == "__main__":
@@ -21,7 +23,8 @@ if __name__ == "__main__":
                         "3. Change sudoers\n"
                         "4. Configure SSH\n"
                         "5. Disable services\n"
-                        "6. View logs\n"
+                        "6. Do(Not) display last loggon in User \n"
+                        "7. View logs\n"
                         "0. Quit Program\n"
                         "----------------------------------\n"
                         "Select an option: "))
@@ -31,14 +34,16 @@ if __name__ == "__main__":
             case "1":
                 passwdReq.passwdReqPromp()
             case "2":
-                print("Not yet implemented.")
+                change_passwds.passwds_prompt()
             case "3":
-                print("Not yet implemented.")
+                sudo_priv.sudoPrivPrompt()
             case "4":
                 install_ssh.ssh_prompt()
             case "5":
                 print("Not yet implemented.")
             case "6":
+                subprocess.call(['sh', 'display_user_login.sh'])
+            case "7":
                 print("Not yet implemented.")
             case "0":
                 print("Quitting program.")

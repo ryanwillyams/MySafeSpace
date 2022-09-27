@@ -1,6 +1,7 @@
 import subprocess
 import functions
 
+#Gives prompt for different password complexity options
 def passwdReqPromp():
     option = ""
     while option != "0":
@@ -24,6 +25,7 @@ def passwdReqPromp():
             case _:
                 print("Invalid entry.")                
 
+# Asks users for their inputs for changing password complexity
 def passwdComplex():
     print("Change Password Requirements\n")
     print("----------------------------\n")
@@ -50,10 +52,12 @@ def passwdComplex():
 
     passwdReqs(minlength, upper, lower, digit, other, remember)
 
+# Changes /etc/pam.d/common-password config file for password complexity
 def passwdReqs(minlength, upper, lower, digit, other, remember):
     parameters = 's/^password\trequisite\t\t\tpam_pwquality.so.*$/password\trequisite\t\t\tpam_pwquality.so retry=3 ' + minlength + " " + upper + " " + lower + " " + digit + " " + other + " " + remember + '/'
     subprocess.run(["perl", "-p", "-i.orig", "-e", parameters, "/etc/pam.d/common-password"])        
 
+# Prompt for changing password expiration period
 def passwdExpir():
     print("Change Password Expiration period\n")
     print("----------------------------------\n")
@@ -67,6 +71,8 @@ def passwdExpir():
 
     passwdExpirConfig(maxDay, minDay, warn)
 
+# Changes /etc/login.defs file and all existing normal users
+# password expiration period configs
 def passwdExpirConfig(maxDay, minDay, warn):
     parameter = "s/^PASS_MAX_DAYS\t.*$/PASS_MAX_DAYS\t" + maxDay + "/"
     subprocess.run(["perl", "-p", "-i.orig", "-e", parameter, "/etc/login.defs"])
