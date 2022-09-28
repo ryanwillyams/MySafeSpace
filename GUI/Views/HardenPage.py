@@ -1,8 +1,16 @@
+from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
     QWidget,QTabWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox
+    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox,
+    QListWidget,QListWidgetItem
 )
 from PyQt6.QtCore import Qt
+
+# TODO Find a way to import this function outside of this file
+import sys 
+sys.path.append("..")
+from functions import listUsers
+
 """
 Options for harden tab
 1. Change password requirements
@@ -118,9 +126,32 @@ class PasswordReqTab(QWidget):
     
         
 
+CHANGE_PASSWORD_STYLE = """
+
+"""
 class ChangePasswordTab(QWidget):
     def __init__(self):
         super(ChangePasswordTab,self).__init__()
+        main_layout = QVBoxLayout()
+        
+        title_card = QLabel("Choose Users to reset password")
+
+        main_layout.addWidget(title_card)
+        self.user_list_display = QListWidget()
+
+        users_list = listUsers()
+        check_box_users = []
+
+        for user in users_list:
+            check_box_users.append(QListWidgetItem(user))
+            check_box_users[-1].setCheckState(Qt.CheckState.Unchecked)
+            self.user_list_display.addItem(check_box_users[-1])
+
+
+        main_layout.addWidget(self.user_list_display)
+        self.submit_button = QPushButton("Submit")
+        main_layout.addWidget(self.submit_button)
+        self.setLayout(main_layout)
 
 
 class ChangeSudoers(QWidget):

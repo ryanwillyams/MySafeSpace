@@ -7,15 +7,15 @@ To do this
 
 
 #### 2. Setup Environment
-If you have not made a python virtual environment you can do so with the command
-```python3 -m venv <Name of you venv here>```
-Learn more about virtual environments [here](https://docs.python.org/3/library/venv.html)
-For the rest of these instructions assume the name of the venv is `.venv`
+If you have not made a python virtual environment you can do so with the command  
+```python3 -m venv .venv```  
+**If you make your venv another name make sure not to push it to the repo or add it to the .gitignore**  
+Learn more about virtual environments [here](https://docs.python.org/3/library/venv.html)  
 
-to start the venv you need to run the activate script
-In Bash the command is: 
-```source .venv/bin/activate```
-You will know it worked if to the left of your terminal there is `(.venv)`
+In order to start the venv you need to run the activate script  
+In Bash the command is:  
+```source .venv/bin/activate```  
+You will know it worked if to the left of your terminal there is `(.venv)`  
 
 
 #### 3. Installing dependecies 
