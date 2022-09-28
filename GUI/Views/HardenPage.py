@@ -68,9 +68,10 @@ class PasswordReqTab(QWidget):
         
         ##
         #Initalize Minimum Characters
+        
         self.min_chars = QSpinBox()
         self.min_chars.setRange(4,32)
-        
+        self.min_chars.setMaximumSize(64,32)
         main_layout.addWidget(self.min_chars)
 
         ##
