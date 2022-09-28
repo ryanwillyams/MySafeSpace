@@ -108,8 +108,6 @@ class PasswordReqTab(QWidget):
         print("Checking Text")
         states = [button for button in self.check_buttons if button == Qt.CheckState.Checked]
 
-        pass
-
     def clear_button(self):
         pass
 
