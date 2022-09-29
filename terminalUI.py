@@ -8,6 +8,7 @@ import passwdReq
 import install_ssh
 import change_passwds
 import sudo_priv
+import iptables
 
 
 if __name__ == "__main__":
@@ -24,7 +25,8 @@ if __name__ == "__main__":
                         "4. Configure SSH\n"
                         "5. Disable services\n"
                         "6. Do(Not) display last loggon in User \n"
-                        "7. View logs\n"
+                        "7. Configure IPTables\n"
+                        "8. View logs\n"
                         "0. Quit Program\n"
                         "----------------------------------\n"
                         "Select an option: "))
@@ -44,11 +46,11 @@ if __name__ == "__main__":
             case "6":
                 subprocess.call(['sh', 'display_user_login.sh'])
             case "7":
+                iptables.iptablesPrompt()
+            case "8":
                 print("Not yet implemented.")
             case "0":
                 print("Quitting program.")
                 exit()
             case _:
                 print("Invalid entry.")
-        
-        time.sleep(1)
