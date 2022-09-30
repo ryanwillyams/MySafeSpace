@@ -29,33 +29,69 @@ def passwdReqPromp():
 def passwdComplex():
     print("Change Password Requirements\n")
     print("----------------------------\n")
-    minlength = "minlen=" + input("Minimun length of Password: ")
+    minlength = input("Minimun length of Password: ")
     answer = "n"
-    upper = 'ucredit=0'
-    lower = 'lcredit=0'
-    digit = 'dcredit=0'
-    other = 'ocredit=0'
+    upper = False
+    lower = False
+    digit = False
+    other = False
 
     answer = input("Require uppercase?(y/n): ")
     if answer == "y":
-        upper = "ucredit=-1"
+        upper = True
     answer = input("Require lowercase?(y/n): ")
     if answer == "y":
-        lower = "lcredit=-1"
+        lower = True
     answer = input("Require digits?(y/n): ")
     if answer == "y":
-        digit = "dcredit=-1"
+        digit = True
     answer = input("Require special characters?(y/n): ")
     if answer == "y":
-        other = "ocredit=-1"
-    remember = "remember=" + input("How many passwords to remember: ")
+        other = True
+    remember = input("How many passwords to remember: ")
 
     passwdReqs(minlength, upper, lower, digit, other, remember)
 
+def minChar(input):
+    return "minlen=" + input
+
+def needUpper(input):
+    if input:
+        return "ucredit=-1"
+    else:
+        return "ucredit=0"
+
+def needLower(input):
+    if input:
+        return "lcredit=-1"
+    else:
+        return "lcredit=0"
+
+def needDigit(input):
+    if input:
+        return "dcredit=-1"
+    else:
+        return "dcredit=0"
+
+def needSpecial(input):
+    if input:
+        return "ocredit=-1"
+    else:
+        return "ocredit=0"
+
+def minRemember(input):
+    return "remember=" + input
+
 # Changes /etc/pam.d/common-password config file for password complexity
 def passwdReqs(minlength, upper, lower, digit, other, remember):
+    minlength = minChar(minlength)
+    upper = needUpper(upper)
+    lower = needLower(lower)
+    digit = needDigit(digit)
+    other = needSpecial(other)
+    remember = minRemember(remember)
     parameters = 's/^password\trequisite\t\t\tpam_pwquality.so.*$/password\trequisite\t\t\tpam_pwquality.so retry=3 ' + minlength + " " + upper + " " + lower + " " + digit + " " + other + " " + remember + '/'
-    subprocess.run(["perl", "-p", "-i.orig", "-e", parameters, "/etc/pam.d/common-password"])        
+    subprocess.run(["sudo", "perl", "-p", "-i.orig", "-e", parameters, "/etc/pam.d/common-password"])        
 
 # Prompt for changing password expiration period
 def passwdExpir():
