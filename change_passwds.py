@@ -15,19 +15,22 @@ import subprocess
 
 # Changed function to change all selected users to same password and not
 # require re-entry of password
-def passwd_change():
+def passwd_change_prompt():
     # This function lets the user change the password of any user
     print('Please enter a user or list of users for password change: ')
     user = input().split()
     newPassword = input("Enter new password for given users: ")
-    for i in user:
+    passwdChange(newPassword, user)
+        # subprocess.run(['sudo', 'passwd',i])
+
+def passwdChange(newPasswd, users):
+    for i in users:
         print('USERNAME: ' + i)
-        userPass = '\"' + i + ':' + newPassword + '\"'
+        userPass = '\"' + i + ':' + newPasswd + '\"'
         cmd = 'echo ' + userPass + ' | sudo chpasswd'
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         print(proc.communicate()[0])
-        # subprocess.run(['sudo', 'passwd',i])
-
+    
     
 def passwds_prompt():
     option = ""
@@ -43,7 +46,7 @@ def passwds_prompt():
 
         match option:
             case "1":
-                passwd_change()
+                passwd_change_prompt()
             case "0":
                 print("Back to main menu.")
             case _:
