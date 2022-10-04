@@ -8,8 +8,8 @@ from Views.ServicesPage import ServicesPage
 
 class MainWindow(QMainWindow):
     
-    WIDTH = 600
-    HEIGHT = 400
+    WIDTH = 1024
+    HEIGHT = 768
 
     def __init__(self):
         super(MainWindow,self).__init__()

@@ -8,7 +8,8 @@ from PyQt6.QtCore import Qt
 
 # TODO Find a way to import this function outside of this file
 import sys 
-sys.path.append("..")
+sys.path.append("..") 
+
 from functions import listUsers
 from passwdReq import passwdReqs
 
@@ -111,10 +112,9 @@ class PasswordReqTab(QWidget):
         main_layout.addWidget(bottom_buttons)
         self.setLayout(main_layout)
 
-        self.submit_button.clicked.connect(lambda: passwdReqs(self.min_chars.text(), 
-                    self.need_upper_case.isChecked(), self.need_lower_case.isChecked(), 
-                    self.need_digits.isChecked(), self.need_special_chars.isChecked(), 
-                    self.pass_remember.text()))
+
+
+        self.submit_button.clicked.connect(self.submit_button)
     
 
     def text_was_edited(self):
@@ -126,13 +126,16 @@ class PasswordReqTab(QWidget):
     def is_text_area_valid(self):
         # Check checkboxes
         print("Checking Text")
-        states = [button for button in self.check_buttons if button == Qt.CheckState.Checked]
+        states = [button for button in self.check_buttons if button.isChecked()]
 
-    def clear_button(self):
+    def clear_button_action(self):
         pass
 
-    def submit_button(self):
-        # TODO add the submit button
+    def submit_button_action(self):
+        passwdReqs(self.min_chars.text(), 
+                    self.need_upper_case.isChecked(), self.need_lower_case.isChecked(), 
+                    self.need_digits.isChecked(), self.need_special_chars.isChecked(), 
+                    self.pass_remember.text())
         pass
 
     
@@ -141,6 +144,7 @@ class PasswordReqTab(QWidget):
 CHANGE_PASSWORD_STYLE = """
 
 """
+
 class ChangePasswordTab(QWidget):
     def __init__(self):
         super(ChangePasswordTab,self).__init__()
