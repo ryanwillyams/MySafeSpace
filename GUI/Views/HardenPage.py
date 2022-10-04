@@ -2,7 +2,7 @@ from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
     QWidget,QTabWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox,
-    QListWidget,QListWidgetItem
+    QListWidget,QListWidgetItem, QScrollBar
 )
 from PyQt6.QtCore import Qt
 
@@ -31,19 +31,40 @@ class HardenPage(QWidget):
         layout = QVBoxLayout()
 
         tabs = QTabWidget()
+        # list_widget = QListWidget()
+        # list_widget.setGeometry()
         tabs.setTabPosition(QTabWidget.TabPosition.West)
 
         # Initialize tabs
         passReqTab = PasswordReqTab()
         changePassTab = ChangePasswordTab()
         changeSudoers = ChangeSudoers()
+        disableServices = DisableServices()
+        iptables = IPTables()
+        # passReqTab = QListWidgetItem("Password Requirements")
+        # changePassTab = QListWidgetItem("Change Password")
+        # changeSudoers = QListWidgetItem("Change Sudoers")
+        # disableServices = QListWidgetItem("Disable Services")
+        # iptables = QListWidgetItem("IPTables")
 
 
         tabs.addTab(passReqTab,"Password Requirements")
         tabs.addTab(changePassTab,"Change Password")
         tabs.addTab(changeSudoers, "Change Sudoers")
+        tabs.addTab(disableServices, "Disable Services")
+        tabs.addTab(iptables, "IPTables")
+        # list_widget.addItem(passReqTab)
+        # list_widget.addItem(changePassTab)
+        # list_widget.addItem(changeSudoers)
+        # list_widget.addItem(disableServices)
+        # list_widget.addItem(iptables)
+        # list_widget.itemClicked.connect(PasswordReqTab.__init__)
         
         layout.addWidget(tabs)
+        # scroll_bar = QScrollBar(self)
+        # list_widget.setVerticalScrollBar(scroll_bar)
+        # layout.addWidget(list_widget)
+
         self.setLayout(layout)
 
 #TODO Add better Styling to password requirements
@@ -57,17 +78,6 @@ class PasswordReqTab(QWidget):
     def __init__(self):
         super(PasswordReqTab,self).__init__()
         main_layout = QGridLayout(self)
-        
-        ##
-        # Initialize Text Area
-        # label_text_edit = QLabel('Try your password here')
-        # self.current_password_text = ''
-
-        # self.main_text_edit_area = QLineEdit()
-        # self.main_text_edit_area.textChanged.connect(self.text_was_edited)
-        # main_layout.addWidget(label_text_edit)
-        # main_layout.addWidget(self.main_text_edit_area)
-        
         ##
         #Initalize Minimum Characters
         self.minCharLabel = QLabel('&Minimum password length', self)
@@ -201,3 +211,11 @@ class ChangePasswordTab(QWidget):
 class ChangeSudoers(QWidget):
     def __init__(self):
         super(ChangeSudoers,self).__init__()
+
+class DisableServices(QWidget):
+    def __init__(self):
+        super(DisableServices,self).__init__()
+
+class IPTables(QWidget):
+    def __init__(self):
+        super(IPTables,self).__init__()
