@@ -167,7 +167,6 @@ class PasswordReqTab(QWidget):
 
         index = 5
         for button in self.check_buttons:
-            button.stateChanged.connect(self.is_text_area_valid)
             main_layout.addWidget(button, index, 0)
             index += 1
         ##
@@ -193,30 +192,6 @@ class PasswordReqTab(QWidget):
         
         # Update password expiration config file '/etc/login.defs'
         passwdExpirConfig(self.max_day.text(), self.min_day.text(), self.warning.text())
-        
-        return 0
-    
-
-    def text_was_edited(self):
-        
-        self.current_password_text = self.main_text_edit_area.text()
-        # print(self.current_password_text)
-
-
-    def is_text_area_valid(self):
-        # Check checkboxes
-        print("Checking Text")
-        states = [button for button in self.check_buttons if button == Qt.CheckState.Checked]
-
-    def clear_button(self):
-        pass
-
-    def submit_button(self):
-        # TODO add the submit button
-        pass
-
-    
-        
 
 CHANGE_PASSWORD_STYLE = """
 
