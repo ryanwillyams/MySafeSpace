@@ -9,6 +9,7 @@ import install_ssh
 import change_passwds
 import sudo_priv
 import iptables
+import automatic_backups
 
 
 if __name__ == "__main__":
@@ -26,7 +27,8 @@ if __name__ == "__main__":
                         "5. Disable services\n"
                         "6. Do(Not) display last loggon in User \n"
                         "7. Configure IPTables\n"
-                        "8. View logs\n"
+                        "8. Manual/Automatic Backups\n"
+                        "9. View logs\n"
                         "0. Quit Program\n"
                         "----------------------------------\n"
                         "Select an option: "))
@@ -48,6 +50,8 @@ if __name__ == "__main__":
             case "7":
                 iptables.iptablesPrompt()
             case "8":
+                automatic_backups.backup()
+            case "9":
                 print("Not yet implemented.")
             case "0":
                 print("Quitting program.")
