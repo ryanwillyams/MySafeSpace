@@ -1,4 +1,5 @@
 import subprocess
+import socket
 import pwd
 import re
 # Creates list of all users
@@ -30,3 +31,29 @@ def listUsers():
             userList.append(p[0])
 
     return userList
+
+# List all sudoers
+def list_sudoers():
+    sudoers = []
+
+    cmd = "grep -Po '^sudo.+:\K.*$' /etc/group"
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    sudoers = proc.stdout.read().decode()
+    sudoers = sudoers.rstrip('\n')
+    sudoers_list = sudoers.split(",")
+    
+    return sudoers_list
+
+# Lists all non-sudoers
+def list_nonsudoers():
+    all_users = listUsers()
+    sudoers = list_sudoers()
+    return [x for x in all_users if x not in sudoers]
+
+# Validates IP Address
+def validate_ip_address(ip):
+    try:
+        socket.inet_aton(ip)
+        return True
+    except socket.error:
+        return False
