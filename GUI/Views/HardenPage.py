@@ -10,7 +10,7 @@ from PyQt6.QtCore import Qt
 import sys 
 sys.path.append("..")
 from functions import listUsers
-from passwdReq import passwdReqs
+from passwdReq import passwdExpirConfig, passwdReqs
 from change_passwds import passwdChange
 
 """
@@ -174,7 +174,7 @@ class PasswordReqTab(QWidget):
         # Initialize Buttons
         button_layout = QHBoxLayout()
         self.clear_button = QPushButton("Clear")
-        self.submit_button = QPushButton("Submit")
+        self.submit_button = QPushButton("Submit", clicked=self.submit_password_req_changes)
 
         button_layout.addWidget(self.clear_button)
         button_layout.addWidget(self.submit_button)
@@ -185,10 +185,16 @@ class PasswordReqTab(QWidget):
         main_layout.addWidget(bottom_buttons)
         self.setLayout(main_layout)
 
-        self.submit_button.clicked.connect(lambda: passwdReqs(self.min_chars.text(), 
-                    self.need_upper_case.isChecked(), self.need_lower_case.isChecked(), 
-                    self.need_digits.isChecked(), self.need_special_chars.isChecked(), 
-                    self.pass_remember.text()))
+    def submit_password_req_changes(self):
+        # Update password requirements config file '/etc/pam.d/common-password'
+        passwdReqs(self.min_chars.text(), self.need_upper_case.isChecked(), 
+                   self.need_lower_case.isChecked(), self.need_digits.isChecked(),
+                   self.need_special_chars.isChecked(), self.pass_remember.text())
+        
+        # Update password expiration config file '/etc/login.defs'
+        passwdExpirConfig(self.max_day.text(), self.min_day.text(), self.warning.text())
+        
+        return 0
     
 
     def text_was_edited(self):
