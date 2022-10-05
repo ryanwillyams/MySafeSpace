@@ -1,6 +1,6 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget, QVBoxLayout, QHBoxLayout,
+    QWidget,QTabWidget,QFormLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox,
     QListWidget,QListWidgetItem
 )
@@ -56,17 +56,32 @@ class HardenPage(QWidget):
 class PasswordReqTab(QWidget):
     def __init__(self):
         super(PasswordReqTab,self).__init__()
-        main_layout = QVBoxLayout()
+        main_layout = QFormLayout()
         
-        ##
-        # Initialize Text Area
-        label_text_edit = QLabel('Try your password here')
-        self.current_password_text = ''
+        title_label = QLabel('Set Password Requirements Here')
+        # title_label.setProperty("Title_Font_Size",True)
+        # title_label.setFont(title_font_size)
 
-        self.main_text_edit_area = QLineEdit()
-        self.main_text_edit_area.textChanged.connect(self.text_was_edited)
-        main_layout.addWidget(label_text_edit)
-        main_layout.addWidget(self.main_text_edit_area)
+        # Adjust font size of Label
+        # Yes this is the best way to do it
+        tlf = title_label.font()
+        tlf.setPointSize(30)
+        title_label.setFont(tlf)
+        
+        title_label.setFixedHeight(40)
+        main_layout.addWidget(title_label)
+        
+        
+        
+        # ##
+        # # Initialize Text Area
+        # label_text_edit = QLabel('Try your password here')
+        # self.current_password_text = ''
+
+        # self.main_text_edit_area = QLineEdit()
+        # self.main_text_edit_area.textChanged.connect(self.text_was_edited)
+        # main_layout.addWidget(label_text_edit)
+        # main_layout.addWidget(self.main_text_edit_area)
         
         ##
         #Initalize Minimum Characters
@@ -97,6 +112,7 @@ class PasswordReqTab(QWidget):
         for button in self.check_buttons:
             button.stateChanged.connect(self.is_text_area_valid)
             main_layout.addWidget(button)
+
         ##
         # Initialize Buttons
         button_layout = QHBoxLayout()
@@ -112,13 +128,13 @@ class PasswordReqTab(QWidget):
         main_layout.addWidget(bottom_buttons)
         self.setLayout(main_layout)
 
-
-
-        self.submit_button.clicked.connect(self.submit_button)
+        ##
+        # Initialize button connections
+        self.clear_button.clicked.connect(self.clear_button_action)
+        self.submit_button.clicked.connect(self.submit_button_action)
     
 
     def text_was_edited(self):
-        
         self.current_password_text = self.main_text_edit_area.text()
         # print(self.current_password_text)
 
@@ -129,21 +145,15 @@ class PasswordReqTab(QWidget):
         states = [button for button in self.check_buttons if button.isChecked()]
 
     def clear_button_action(self):
-        pass
+        for button in self.check_buttons:
+            button.setCheckState(Qt.CheckState.Unchecked)
 
     def submit_button_action(self):
         passwdReqs(self.min_chars.text(), 
                     self.need_upper_case.isChecked(), self.need_lower_case.isChecked(), 
                     self.need_digits.isChecked(), self.need_special_chars.isChecked(), 
                     self.pass_remember.text())
-        pass
 
-    
-        
-
-CHANGE_PASSWORD_STYLE = """
-
-"""
 
 class ChangePasswordTab(QWidget):
     def __init__(self):

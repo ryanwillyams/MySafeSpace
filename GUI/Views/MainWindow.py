@@ -8,6 +8,7 @@ from Views.ServicesPage import ServicesPage
 
 class MainWindow(QMainWindow):
     
+    # Keeps a 4:3 aspect ratio
     WIDTH = 1024
     HEIGHT = 768
 
