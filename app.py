@@ -1,4 +1,4 @@
-from Views.MainWindow import MainWindow
+from GUI.Views.MainWindow import MainWindow
 from stlye_config import get_dark_color_theme
 
 from PyQt6.QtWidgets import QApplication,QStyle
