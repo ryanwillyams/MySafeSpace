@@ -17,22 +17,22 @@ def sudoPrivPrompt():
 
         match option:
             case "1":
-                addSudo()
+                print('Please enter a user or list of users to add to group sudo: ')
+                user = input().split()
+                addSudo(user)
             case "2":
-                removeSudo()
+                print('Please enter a user or list of users to remove from group sudo: ')
+                user = input().split()
+                removeSudo(user)
             case "0":
                 print("Back to main menu.")
             case _:
                 print("Invalid entry.")
 
-def addSudo():
-    print('Please enter a user or list of users for password change: ')
-    user = input().split()
+def addSudo(user):
     for i in user:
         subprocess.run(['sudo', 'adduser', i, 'sudo'])
 
-def removeSudo():
-    print('Please enter a user or list of users for password change: ')
-    user = input().split()
+def removeSudo(user):
     for i in user:
         subprocess.run(['sudo', 'deluser', i, 'sudo'])
