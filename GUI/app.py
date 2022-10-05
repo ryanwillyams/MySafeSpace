@@ -1,10 +1,11 @@
 from Views.MainWindow import MainWindow
 from stlye_config import get_dark_color_theme
+
 from PyQt6.QtWidgets import QApplication,QStyle
 
 
+
 if __name__ == '__main__':
-    
 
     ##
     # Get style of application
@@ -18,6 +19,7 @@ if __name__ == '__main__':
     #Set a default Dark theme
     # palette = get_dark_color_theme()
     # app.setPalette(palette)
+
 
     window = MainWindow()
     window.show()

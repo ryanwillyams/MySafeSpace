@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
     WIDTH = 1024
     HEIGHT = 768
 
+
     def __init__(self):
         super(MainWindow,self).__init__()
 

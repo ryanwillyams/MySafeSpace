@@ -8,10 +8,11 @@ from PyQt6.QtCore import Qt
 
 # TODO Find a way to import this function outside of this file
 import sys 
-sys.path.append("..") 
 
+sys.path.append("..")
 from functions import listUsers
-from passwdReq import passwdReqs
+from passwdReq import passwdExpirConfig, passwdReqs
+from change_passwds import passwdChange
 
 """
 Options for harden tab
@@ -28,23 +29,51 @@ class HardenPage(QWidget):
     def __init__(self):
         super(HardenPage,self).__init__()
         
-        layout = QVBoxLayout()
+        # Layout
+        self.layout = QGridLayout(self)
 
-        tabs = QTabWidget()
-        tabs.setTabPosition(QTabWidget.TabPosition.West)
+        # Scrollbar
+        list_widget = QListWidget()
+        list_widget.setMaximumWidth(180)
 
-        # Initialize tabs
-        passReqTab = PasswordReqTab()
-        changePassTab = ChangePasswordTab()
-        changeSudoers = ChangeSudoers()
+        # Scrollbar List
+        passReqTab = QListWidgetItem("Password Requirements")
+        changePassTab = QListWidgetItem("Change Password")
+        changeSudoers = QListWidgetItem("Change Sudoers")
+        disableServices = QListWidgetItem("Disable Services")
+        iptables = QListWidgetItem("IPTables")
+        self.current_tab = PasswordReqTab()
 
-
-        tabs.addTab(passReqTab,"Password Requirements")
-        tabs.addTab(changePassTab,"Change Password")
-        tabs.addTab(changeSudoers, "Change Sudoers")
+        list_widget.addItem(passReqTab)
+        list_widget.addItem(changePassTab)
+        list_widget.addItem(changeSudoers)
+        list_widget.addItem(disableServices)
+        list_widget.addItem(iptables)
+        list_widget.itemClicked.connect(self.change_tab)
         
-        layout.addWidget(tabs)
-        self.setLayout(layout)
+        # Scrollbar formatting
+        scroll_bar = QScrollBar(self)
+        list_widget.setVerticalScrollBar(scroll_bar)
+        self.layout.addWidget(list_widget, 0, 0)
+        self.layout.addWidget(self.current_tab, 0, 1)
+
+        self.setLayout(self.layout)
+    
+    # Function for changing between different menus
+    def change_tab(self, item):
+        self.current_tab.close()
+        match item.text():
+            case "Password Requirements":                
+                self.current_tab = PasswordReqTab()
+            case "Change Password":
+                self.current_tab = ChangePasswordTab()                
+            case "Change Sudoers":                
+                self.current_tab = ChangeSudoers()                
+            case "Disable Services":                
+                self.current_tab = DisableServices()                
+            case "IPTables":                
+                self.current_tab = IPTables()                
+        self.layout.addWidget(self.current_tab, 0, 1)
 
 #TODO Add better Styling to password requirements
 # - Better Text Area
@@ -56,45 +85,69 @@ class HardenPage(QWidget):
 class PasswordReqTab(QWidget):
     def __init__(self):
         super(PasswordReqTab,self).__init__()
-        main_layout = QFormLayout()
-        
-        title_label = QLabel('Set Password Requirements Here')
-        # title_label.setProperty("Title_Font_Size",True)
-        # title_label.setFont(title_font_size)
-
-        # Adjust font size of Label
-        # Yes this is the best way to do it
-        tlf = title_label.font()
-        tlf.setPointSize(30)
-        title_label.setFont(tlf)
-        
-        title_label.setFixedHeight(40)
-        main_layout.addWidget(title_label)
-        
-        
-        
-        # ##
-        # # Initialize Text Area
-        # label_text_edit = QLabel('Try your password here')
-        # self.current_password_text = ''
-
-        # self.main_text_edit_area = QLineEdit()
-        # self.main_text_edit_area.textChanged.connect(self.text_was_edited)
-        # main_layout.addWidget(label_text_edit)
-        # main_layout.addWidget(self.main_text_edit_area)
+        main_layout = QGridLayout(self)
         
         ##
-        #Initalize Minimum Characters
-        
-        self.min_chars = QSpinBox()
-        self.min_chars.setRange(4,32)
-        self.min_chars.setMaximumSize(64,32)
-        main_layout.addWidget(self.min_chars)
+        # Maximum days before password change
+        self.max_day_label = QLabel('&Maximum number of days before changing password', self)
+        self.max_day = QSpinBox(self)
+        self.max_day_label.setBuddy(self.max_day)
 
-        self.pass_remember = QSpinBox()
-        self.pass_remember.setRange(1,32)
-        self.pass_remember.setMaximumSize(64,32)
-        main_layout.addWidget(self.pass_remember)
+        self.max_day.setRange(1,99999)
+        self.max_day.setMaximumSize(80,32)
+        self.max_day.setValue(90)
+
+        main_layout.addWidget(self.max_day_label, 0, 0)
+        main_layout.addWidget(self.max_day, 0, 1)
+
+        #Minimum days before password change
+        self.min_day_label = QLabel('&Minimum number of days before changing password', self)
+        self.min_day = QSpinBox(self)
+        self.min_day_label.setBuddy(self.min_day)
+
+        self.min_day.setRange(1,99999)
+        self.min_day.setMaximumSize(80,32)
+        self.min_day.setValue(30)
+
+        main_layout.addWidget(self.min_day_label, 1, 0)
+        main_layout.addWidget(self.min_day, 1, 1)
+
+        # Warning before password change
+        self.warning_label = QLabel('&Number of days before warning is given to change passsword', self)
+        self.warning = QSpinBox(self)
+        self.warning_label.setBuddy(self.warning)
+
+        self.warning.setRange(1,31)
+        self.warning.setMaximumSize(48,32)
+        self.warning.setValue(7)
+
+        main_layout.addWidget(self.warning_label, 2, 0)
+        main_layout.addWidget(self.warning, 2, 1)
+        
+        #Initalize Minimum Characters
+        self.minCharLabel = QLabel('&Minimum password length', self)
+        self.min_chars = QSpinBox(self)
+        self.minCharLabel.setBuddy(self.min_chars)
+
+        self.min_chars.setRange(4,32)
+        self.min_chars.setMaximumSize(48,32)
+        self.min_chars.setValue(12)
+
+        main_layout.addWidget(self.minCharLabel, 3, 0)
+        main_layout.addWidget(self.min_chars, 3, 1)
+
+        # Initalize Password History
+        self.passHist = QLabel('Number of previous passwords remembered', self)
+        self.pass_remember = QSpinBox(self)
+        self.passHist.setBuddy(self.pass_remember)
+
+        self.pass_remember.setRange(1,10)
+        self.pass_remember.setMaximumSize(48,32)
+        self.pass_remember.setValue(5)
+
+        main_layout.addWidget(self.passHist, 4, 0)
+        main_layout.addWidget(self.pass_remember, 4, 1)
+
 
         ##
         # Intialize Checked buttons
@@ -109,15 +162,21 @@ class PasswordReqTab(QWidget):
         self.check_buttons.append(self.need_digits)
         self.check_buttons.append(self.need_special_chars)
 
+        self.need_upper_case.setChecked(True)
+        self.need_lower_case.setChecked(True)
+        self.need_digits.setChecked(True)
+        self.need_special_chars.setChecked(True)
+
+        index = 5
         for button in self.check_buttons:
-            button.stateChanged.connect(self.is_text_area_valid)
-            main_layout.addWidget(button)
+            main_layout.addWidget(button, index, 0)
+            index += 1
 
         ##
         # Initialize Buttons
         button_layout = QHBoxLayout()
         self.clear_button = QPushButton("Clear")
-        self.submit_button = QPushButton("Submit")
+        self.submit_button = QPushButton("Submit", clicked=self.submit_password_req_changes)
 
         button_layout.addWidget(self.clear_button)
         button_layout.addWidget(self.submit_button)
@@ -128,58 +187,69 @@ class PasswordReqTab(QWidget):
         main_layout.addWidget(bottom_buttons)
         self.setLayout(main_layout)
 
-        ##
-        # Initialize button connections
-        self.clear_button.clicked.connect(self.clear_button_action)
-        self.submit_button.clicked.connect(self.submit_button_action)
-    
 
-    def text_was_edited(self):
-        self.current_password_text = self.main_text_edit_area.text()
-        # print(self.current_password_text)
-
-
-    def is_text_area_valid(self):
-        # Check checkboxes
-        print("Checking Text")
-        states = [button for button in self.check_buttons if button.isChecked()]
-
-    def clear_button_action(self):
-        for button in self.check_buttons:
-            button.setCheckState(Qt.CheckState.Unchecked)
-
-    def submit_button_action(self):
-        passwdReqs(self.min_chars.text(), 
-                    self.need_upper_case.isChecked(), self.need_lower_case.isChecked(), 
-                    self.need_digits.isChecked(), self.need_special_chars.isChecked(), 
-                    self.pass_remember.text())
-
+    def submit_password_req_changes(self):
+        # Update password requirements config file '/etc/pam.d/common-password'
+        passwdReqs(self.min_chars.text(), self.need_upper_case.isChecked(), 
+                   self.need_lower_case.isChecked(), self.need_digits.isChecked(),
+                   self.need_special_chars.isChecked(), self.pass_remember.text())
+        
+        # Update password expiration config file '/etc/login.defs'
+        passwdExpirConfig(self.max_day.text(), self.min_day.text(), self.warning.text())
 
 class ChangePasswordTab(QWidget):
     def __init__(self):
         super(ChangePasswordTab,self).__init__()
+
+        # Layout
         main_layout = QVBoxLayout()
-        
+        self.setLayout(main_layout)
+
+        # Title
         title_card = QLabel("Choose Users to reset password")
-
         main_layout.addWidget(title_card)
+
+        # List all normal users on device
         self.user_list_display = QListWidget()
-
-        users_list = listUsers()
-        check_box_users = []
-
-        for user in users_list:
-            check_box_users.append(QListWidgetItem(user))
-            check_box_users[-1].setCheckState(Qt.CheckState.Unchecked)
-            self.user_list_display.addItem(check_box_users[-1])
-
-
         main_layout.addWidget(self.user_list_display)
-        self.submit_button = QPushButton("Submit")
+
+        # Text box for new password
+        self.newPasswdLabel = QLabel("New password: ")
+        main_layout.addWidget(self.newPasswdLabel)
+        self.newPasswd = QLineEdit(self)
+        main_layout.addWidget(self.newPasswd)
+
+        # Submit buttom
+        self.submit_button = QPushButton("Submit", clicked=self.changeCheckedUsers)
         main_layout.addWidget(self.submit_button)
         self.setLayout(main_layout)
+
+        # Retrieve list of users
+        users_list = listUsers()
+        for user in users_list:
+            item = QListWidgetItem(user)
+            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            self.user_list_display.addItem(item)
+
+    # Function to change selected users
+    def changeCheckedUsers(self):
+        checkedUsers = []
+        for index in range(self.user_list_display.count()):
+            if self.user_list_display.item(index).checkState() == Qt.CheckState.Checked:
+                checkedUsers.append(self.user_list_display.item(index).text())
+
+        passwdChange(self.newPasswd.text(), checkedUsers)
 
 
 class ChangeSudoers(QWidget):
     def __init__(self):
         super(ChangeSudoers,self).__init__()
+
+class DisableServices(QWidget):
+    def __init__(self):
+        super(DisableServices,self).__init__()
+
+class IPTables(QWidget):
+    def __init__(self):
+        super(IPTables,self).__init__()
