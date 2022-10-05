@@ -160,7 +160,7 @@ def addRule():
                 break
             case _:
                 print("Not valid option, try again.")
-    if trafficType == "exit":
+    if trafficType == "exit" or traffic == "exit":
         return False
 
     # Select allow, deny, or reject
@@ -185,17 +185,24 @@ def addRule():
 # Checks if port number is valid
 def portNum():
     while True:
-        port = int(input("Enter port number\n"))
-        if port >= 1 and port <= 65535:
-            return str(port)
-        else:
-            print("Invalid port number. Ensure number is between 1-65535")
+        port = (input("Enter port number\n"))
+        if port.isnumeric():
+            port = int(port)
+            if port >= 1 and port <= 65535:
+                return str(port)    
+        elif port =="exit":
+            return port
+        
+        print("Invalid port number. Ensure number is between 1-65535")
+
+        
+        
 
 # Checks if ip address is valid
 def ipNum():
     while True:
         ip = input("Enter IP Address\n")
-        if functions.validate_ip_address(ip):
+        if functions.validate_ip_address(ip) or ip == "exit":
             return ip
         else:
             print("Invalid IP Address. ensure Address is between 0.0.0.0 and 255.255.255.255")
