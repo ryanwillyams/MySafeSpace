@@ -1,13 +1,14 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget, QVBoxLayout, QHBoxLayout, QGridLayout,
+    QWidget,QTabWidget,QFormLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox,
-    QListWidget,QListWidgetItem, QScrollBar
+    QListWidget,QListWidgetItem
 )
 from PyQt6.QtCore import Qt
 
 # TODO Find a way to import this function outside of this file
 import sys 
+
 sys.path.append("..")
 from functions import listUsers
 from passwdReq import passwdExpirConfig, passwdReqs
@@ -147,6 +148,7 @@ class PasswordReqTab(QWidget):
         main_layout.addWidget(self.passHist, 4, 0)
         main_layout.addWidget(self.pass_remember, 4, 1)
 
+
         ##
         # Intialize Checked buttons
         self.check_buttons = []
@@ -169,6 +171,7 @@ class PasswordReqTab(QWidget):
         for button in self.check_buttons:
             main_layout.addWidget(button, index, 0)
             index += 1
+
         ##
         # Initialize Buttons
         button_layout = QHBoxLayout()
@@ -184,6 +187,7 @@ class PasswordReqTab(QWidget):
         main_layout.addWidget(bottom_buttons)
         self.setLayout(main_layout)
 
+
     def submit_password_req_changes(self):
         # Update password requirements config file '/etc/pam.d/common-password'
         passwdReqs(self.min_chars.text(), self.need_upper_case.isChecked(), 
@@ -193,9 +197,6 @@ class PasswordReqTab(QWidget):
         # Update password expiration config file '/etc/login.defs'
         passwdExpirConfig(self.max_day.text(), self.min_day.text(), self.warning.text())
 
-CHANGE_PASSWORD_STYLE = """
-
-"""
 class ChangePasswordTab(QWidget):
     def __init__(self):
         super(ChangePasswordTab,self).__init__()
@@ -239,6 +240,7 @@ class ChangePasswordTab(QWidget):
                 checkedUsers.append(self.user_list_display.item(index).text())
 
         passwdChange(self.newPasswd.text(), checkedUsers)
+
 
 class ChangeSudoers(QWidget):
     def __init__(self):
