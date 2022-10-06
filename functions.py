@@ -50,10 +50,4 @@ def list_nonsudoers():
     sudoers = list_sudoers()
     return [x for x in all_users if x not in sudoers]
 
-# Validates IP Address
-def validate_ip_address(ip):
-    try:
-        socket.inet_aton(ip)
-        return True
-    except socket.error:
-        return False
+
