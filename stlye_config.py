@@ -1,4 +1,4 @@
-from PyQt6.QtGui import QKeySequence, QPalette, QColor
+from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtCore import Qt
 
 def get_dark_color_theme():
