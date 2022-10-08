@@ -2,7 +2,7 @@ from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
     QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar,
+    QListWidget,QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
 
@@ -335,6 +335,7 @@ class IPTables(QWidget):
         btn_change_policy = QPushButton("Change Policies", clicked=self.chainPoliciesForm)
         btn_add_rule = QPushButton("Add Rule", clicked=self.addRuleForm)
         btn_remove_rule = QPushButton("Remove Rule", clicked=self.removeRuleForm)
+        btn_clear_all = QPushButton("Clear All", clicked=self.clearAllMsg)
 
         buttons_layout.addWidget(btn_change_policy)
         buttons_layout.addWidget(btn_add_rule)
@@ -350,20 +351,23 @@ class IPTables(QWidget):
     # Function call to open Chain Policy Form
     def chainPoliciesForm(self):
         self.popup = ChainPoliciesForm()
-        self.popup.setMinimumSize(300, 400)
+        self.popup.setMinimumSize(300, 150)
         self.popup.show()
 
     # Function call to open Add Rule Form
     def addRuleForm(self):
         self.popup = AddRuleForm()
-        self.popup.setMinimumSize(500, 200)
+        self.popup.setMinimumSize(500, 150)
         self.popup.show()
 
     # Function call to open Remove Rule Form
     def removeRuleForm(self):
         self.popup = RemoveRuleForm()
-        self.popup.setMinimumSize(300, 400)
+        self.popup.setMinimumSize(250, 100)
         self.popup.show()
+
+    def clearAllMsg(self):
+        return 0
 
 class ChainPoliciesForm(QWidget):
     def __init__(self):
@@ -440,7 +444,8 @@ class AddRuleForm(QWidget):
         form_layout.addRow(QLabel("Action"), self.action)
 
         # Define Button layout
-        btn_submit = QPushButton("Submit", clicked=self.submitAction)
+        btn_submit = QPushButton("Submit")
+        btn_submit.clicked.connect(self.submitAction)
         button_layout.addWidget(btn_submit)
 
         # Add sublayouts to amin layout
@@ -451,9 +456,20 @@ class AddRuleForm(QWidget):
         self.setLayout(outer_layout)
 
     def submitAction(self):
-        addRule(self.chain_type.currentText(), self.network_type.currentText(), 
+        result = addRule(self.chain_type.currentText(), self.network_type.currentText(), 
                 self.port_ip.text(), self.action.currentText())
-        self.close()
+        if result == "No Error":
+            self.close()
+        # Error Message
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Error Invalid Entry")
+            msg.setText("One of the entries is invalid, check details for more information")
+            msg.setDetailedText(result)
+            # msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec()
+
 
 class RemoveRuleForm(QWidget):
     def __init__(self):
@@ -487,5 +503,17 @@ class RemoveRuleForm(QWidget):
         self.setLayout(outer_layout)
 
     def submitAction(self):
-        removeRule(self.chain_type.currentText(), self.line_number.text())
-        self.close()
+        result = removeRule(self.chain_type.currentText(), self.line_number.text())
+        if result == "No Error":
+            self.close()
+        # Error Message
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Error Invalid Entry")
+            msg.setText("One of the entries is invalid, check details for more information")
+            msg.setDetailedText(result)
+            # msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec()
+
+    
