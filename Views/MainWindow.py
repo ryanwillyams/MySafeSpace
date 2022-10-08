@@ -1,5 +1,4 @@
-import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from Views.ResourcesPage import ResourcesPage
 from Views.HardenPage import HardenPage
