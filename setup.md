@@ -27,3 +27,22 @@ Make sure you are in the venv and run
 #### 4. Starting the interface
 Now to actually run the application
 ```python3 app.py```
+
+
+
+## Build  
+To build the applcation, ensure you have [pyinstaller](https://pyinstaller.org/en/stable/installation.html) in the venv  
+
+#### Building the executable
+
+Whatever type of machine you are on is the one pyinstaller will create an executable for  
+For example, if you are on a 64-bit Ubuntu 22.04 machine it will create an executable for that  
+
+To build the file, run:  
+`pyinstaller main.spec` 
+
+#### Running the build
+
+To run the build run:  
+
+`dist/main/main`

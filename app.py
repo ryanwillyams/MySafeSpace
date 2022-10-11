@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import QApplication
 
 
 
-if __name__ == '__main__':
+def main_gui_app():
 
     ##
     # Get style of application
@@ -16,7 +16,7 @@ if __name__ == '__main__':
     app.setStyle("Fusion")
     
     #Set a default Dark theme
-    palette = get_dark_color_theme()
+    palette = get_dark_color_theme() 
     app.setPalette(palette)
 
 
@@ -24,3 +24,6 @@ if __name__ == '__main__':
     window.show()
 
     app.exec()
+
+if __name__ == '__main__':
+    main_gui_app()
