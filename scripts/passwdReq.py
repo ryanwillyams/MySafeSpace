@@ -1,8 +1,8 @@
 import subprocess
-import functions
+import scripts.functions as functions
 
 #Gives prompt for different password complexity options
-def passwdReqPromp():
+def passwdReqPrompt():
     option = ""
     while option != "0":
         option = input("------------------------------------\n"

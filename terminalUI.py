@@ -4,11 +4,11 @@ import sys
 import subprocess
 import time
 
-import passwdReq
+import scripts.passwdReq as passwdReq
 import install_ssh
-import change_passwds
-import sudo_priv
-import iptables
+import scripts.change_passwds as change_passwds
+import scripts.sudo_priv as sudo_priv
+import scripts.iptables as iptables
 import automatic_backups
 
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
         match option:
             case "1":
-                passwdReq.passwdReqPromp()
+                passwdReq.passwdReqPrompt()
             case "2":
                 change_passwds.passwds_prompt()
             case "3":

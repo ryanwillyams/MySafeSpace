@@ -1,6 +1,6 @@
 # change_passwds.py changes the passwords of selected users 
 
-import functions
+import scripts.functions as functions
 import os
 import subprocess
 

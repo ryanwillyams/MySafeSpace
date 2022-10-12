@@ -1,86 +1,12 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
     QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox,
-    QListWidget,QListWidgetItem, QScrollBar
+    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
+    QListWidget,QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
 
-# TODO Find a way to import this function outside of this file
-import sys 
-
-sys.path.append("..")
-from functions import listUsers
-from passwdReq import passwdExpirConfig, passwdReqs
-from change_passwds import passwdChange
-
-"""
-Options for harden tab
-1. Change password requirements
-2. Change password for user(s)
-3. Change sudoers
-4. Configure SSH
-5. Disable services
-6. View logs
-
-"""
-class HardenPage(QWidget):
-    
-    def __init__(self):
-        super(HardenPage,self).__init__()
-        
-        # Layout
-        self.layout = QGridLayout(self)
-
-        # Scrollbar
-        list_widget = QListWidget()
-        list_widget.setMaximumWidth(180)
-
-        # Scrollbar List
-        passReqTab = QListWidgetItem("Password Requirements")
-        changePassTab = QListWidgetItem("Change Password")
-        changeSudoers = QListWidgetItem("Change Sudoers")
-        disableServices = QListWidgetItem("Disable Services")
-        iptables = QListWidgetItem("IPTables")
-        self.current_tab = PasswordReqTab()
-
-        list_widget.addItem(passReqTab)
-        list_widget.addItem(changePassTab)
-        list_widget.addItem(changeSudoers)
-        list_widget.addItem(disableServices)
-        list_widget.addItem(iptables)
-        list_widget.itemClicked.connect(self.change_tab)
-        
-        # Scrollbar formatting
-        scroll_bar = QScrollBar(self)
-        list_widget.setVerticalScrollBar(scroll_bar)
-        self.layout.addWidget(list_widget, 0, 0)
-        self.layout.addWidget(self.current_tab, 0, 1)
-
-        self.setLayout(self.layout)
-    
-    # Function for changing between different menus
-    def change_tab(self, item):
-        self.current_tab.close()
-        match item.text():
-            case "Password Requirements":                
-                self.current_tab = PasswordReqTab()
-            case "Change Password":
-                self.current_tab = ChangePasswordTab()                
-            case "Change Sudoers":                
-                self.current_tab = ChangeSudoers()                
-            case "Disable Services":                
-                self.current_tab = DisableServices()                
-            case "IPTables":                
-                self.current_tab = IPTables()                
-        self.layout.addWidget(self.current_tab, 0, 1)
-
-#TODO Add better Styling to password requirements
-# - Better Text Area
-# - Smaller Buttons
-# - Closer labels
-#
-
+from scripts.passwdReq import passwdExpirConfig, passwdReqs
 
 class PasswordReqTab(QWidget):
     def __init__(self):
@@ -196,60 +122,3 @@ class PasswordReqTab(QWidget):
         
         # Update password expiration config file '/etc/login.defs'
         passwdExpirConfig(self.max_day.text(), self.min_day.text(), self.warning.text())
-
-class ChangePasswordTab(QWidget):
-    def __init__(self):
-        super(ChangePasswordTab,self).__init__()
-
-        # Layout
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
-
-        # Title
-        title_card = QLabel("Choose Users to reset password")
-        main_layout.addWidget(title_card)
-
-        # List all normal users on device
-        self.user_list_display = QListWidget()
-        main_layout.addWidget(self.user_list_display)
-
-        # Text box for new password
-        self.newPasswdLabel = QLabel("New password: ")
-        main_layout.addWidget(self.newPasswdLabel)
-        self.newPasswd = QLineEdit(self)
-        main_layout.addWidget(self.newPasswd)
-
-        # Submit buttom
-        self.submit_button = QPushButton("Submit", clicked=self.changeCheckedUsers)
-        main_layout.addWidget(self.submit_button)
-        self.setLayout(main_layout)
-
-        # Retrieve list of users
-        users_list = listUsers()
-        for user in users_list:
-            item = QListWidgetItem(user)
-            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
-            item.setCheckState(Qt.CheckState.Unchecked)
-            self.user_list_display.addItem(item)
-
-    # Function to change selected users
-    def changeCheckedUsers(self):
-        checkedUsers = []
-        for index in range(self.user_list_display.count()):
-            if self.user_list_display.item(index).checkState() == Qt.CheckState.Checked:
-                checkedUsers.append(self.user_list_display.item(index).text())
-
-        passwdChange(self.newPasswd.text(), checkedUsers)
-
-
-class ChangeSudoers(QWidget):
-    def __init__(self):
-        super(ChangeSudoers,self).__init__()
-
-class DisableServices(QWidget):
-    def __init__(self):
-        super(DisableServices,self).__init__()
-
-class IPTables(QWidget):
-    def __init__(self):
-        super(IPTables,self).__init__()

@@ -1,7 +1,11 @@
 # Configures iptables
+from asyncio.subprocess import PIPE
 from cProfile import run
+from os import remove
 import subprocess
-import functions
+import socket
+import scripts.functions as functions
+import sys
 
 def iptablesPrompt():
     option = ""
@@ -13,6 +17,7 @@ def iptablesPrompt():
                        "2. View current IPTables rules\n"
                        "3. Add IPTables rule \n"
                        "4. Delete IPTables rule \n"
+                       "5. Delete all IPTable rules\n"
                        "0. Back\n"
                        "------------------------------------\n"
                        "Select an option: ")
@@ -22,11 +27,17 @@ def iptablesPrompt():
             case "1":
                 chainPromt()
             case "2":
-                viewRules()
+                printRules()
             case "3":
-                addRule()
+                addRulePrompt()
             case "4":
-                removeRule()
+                removeRulePrompt()
+            case "5":
+                response = input("Are you sure? Type 'confirm': ")
+                if response == "confirm":
+                    resetRules()
+                else:
+                    print("Rules unchanged")
             case "0":
                 print("Back to main menu.")
             case _:
@@ -66,21 +77,23 @@ def viewChainPolicies():
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     print(proc.communicate()[0].decode())
 
+def changeChainPolicy(chain, response):
+    cmd = "sudo iptables --policy {} {}".format(chain.upper(), response.upper())
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    proc.communicate()
+
 def inputPolicy():
     option = ""
     option = input("To change chain INPUT policy type 'ACCEPT' or 'DROP';\n"
                     "or type exit to go back: ")
     option.lower()
                 
-    match option:
-        case "accept":
-            subprocess.run(["sudo", "iptables", "--policy", "INPUT", "ACCEPT"])
-        case "drop":
-            subprocess.run(["sudo", "iptables", "--policy", "INPUT", "DROP"])
-        case "exit":
-            print("Back to chain policies.")
-        case _:
-            print("Invalid entry.")
+    if option == "accept" or option == "drop":
+        changeChainPolicy("INPUT", option)
+    elif option == "exit":
+        print("Back to chain policies.")
+    else:
+        print("Invalid entry.")
     
 
 def outputPolicy():
@@ -116,11 +129,27 @@ def forwardPolicy():
             print("Invalid entry.")
 
 # Prints out all existing rules
+def printRules():
+    rules = viewRules()
+    for line in rules:
+        print(line)
+
 def viewRules():
-    subprocess.run(["sudo", "iptables", "-L", "--line-numbers"])
+    cmd = "sudo iptables -L --line-numbers"
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    # proc = proc.communicate()[0].decode()
+    
+    rules = []
+    while True:
+        line = proc.stdout.readline().decode()
+        if not line:
+            break
+        rules.append(line.rstrip())
+
+    return rules
 
 # Adds rule to IPTables
-def addRule():
+def addRulePrompt():
     print("Type 'exit' at anytime to leave.")
     # Select chain type
     while True:
@@ -138,7 +167,6 @@ def addRule():
 
     # Select network traffic to allow/deny
     traffic = ""
-    trafficFlag = ""
     destination = ""
     while True:
         trafficType = input("Allow/Deny 'Port' or 'IP'?\n")
@@ -146,15 +174,9 @@ def addRule():
         match trafficType:
             case "port":
                 traffic = portNum()
-                trafficFlag = "-p"
-                if chain == "input":
-                    destination = "--dport"
-                elif chain == "output":
-                    destination = "--sport"
                 break
             case "ip":
                 traffic = ipNum()
-                trafficFlag = "-s"
                 break
             case "exit":
                 break
@@ -173,43 +195,98 @@ def addRule():
             print("Not valid option, try again.")
     if action == "exit":
         return False
-    if trafficType == "port":
-        subprocess.run(["sudo", "iptables", "-A", chain.upper(), trafficFlag,
-         "tcp", destination, traffic, "-j", action.upper()])
-    elif trafficType == "ip":    
-        subprocess.run(["sudo", "iptables", "-A", chain.upper(), trafficFlag,
-         traffic, "-j", action.upper()])
+    addRule(chain, trafficType, traffic, action)
     print("Rule is created")
-    saveRules()
+    
+
+def addRule(chain, traffic_type, traffic, action):
+    traffic = "'" + traffic + "'"
+    traffic_flag = "-s"
+    cmd = ""
+    # Port path
+    if traffic_type.lower() == "port" or traffic_type.lower() == "port number":
+        # if not validatePortNum(traffic):
+        #     return False
+        traffic_flag = "-p"
+        destination = ""
+        if chain.lower() == "input":
+            destination = "--dport"
+        elif chain.lower() == "output":
+            destination == "--sport"
+        # else:
+        #     return False
+        cmd = "sudo iptables -A {} {} tcp {} {} -j {}".format(
+                chain.upper(), traffic_flag, destination, traffic, action.upper())
+    # IP Address path
+    # elif traffic_type.lower() == "ip" or traffic_type.lower() == "ip address":
+    #     if not validateIpAddress(traffic):
+    #         return False
+    #     traffic_flag = "-s"
+    #     cmd = "sudo iptables -A {} {} {} -j {}".format(
+    #             chain.upper(), traffic_flag, traffic, action.upper())
+    # else:
+    #     return False
+    else:
+        cmd = "sudo iptables -A {} {} {} -j {}".format(
+                chain.upper(), traffic_flag, traffic, action.upper())
+    msg = "Error"
+    try:        
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output,error = proc.communicate()
+        saveRules()
+        if output:
+            msg = "Output: {} {}".format(proc.returncode, output)
+        if error:
+            msg = "Error: {} {}".format(proc.returncode, error.strip().decode())
+        else:
+            msg = "No Error"
+    except OSError as e:
+        msg = "Error: ".format(e.errno, e.strerror, e.filename)
+    except:
+        msg = "Error: ".format(sys.exc_info()[0])
+    return msg
+
+    
 
 # Checks if port number is valid
 def portNum():
     while True:
         port = (input("Enter port number\n"))
-        if port.isnumeric():
-            port = int(port)
-            if port >= 1 and port <= 65535:
-                return str(port)    
+        if validatePortNum(port):
+            return str(port)    
         elif port =="exit":
             return port
         
         print("Invalid port number. Ensure number is between 1-65535")
 
-        
-        
+# Checks if port number is valid
+def validatePortNum(port):
+    if port.isnumeric():
+        port = int(port)
+        if port >= 1 and port <= 65535:
+            return True
+    return False
 
 # Checks if ip address is valid
 def ipNum():
     while True:
         ip = input("Enter IP Address\n")
-        if functions.validate_ip_address(ip) or ip == "exit":
+        if validateIpAddress(ip) or ip == "exit":
             return ip
         else:
             print("Invalid IP Address. ensure Address is between 0.0.0.0 and 255.255.255.255")
 
+# Validates IP Address
+def validateIpAddress(ip):
+    try:
+        socket.inet_aton(ip)
+        return True
+    except socket.error:
+        return False
+
 # Removes rule from IPTables
-def removeRule():
-    viewRules()
+def removeRulePrompt():
+    printRules()
     print("Type 'exit' at anytime to leave.")
     # Select chain to delete from
     while True:
@@ -232,7 +309,33 @@ def removeRule():
     if line == "exit":
         return False
     # Execution
-    subprocess.run(["sudo", "iptables", "-D", chain.upper(), line])
+    removeRule(chain, line)
+
+def removeRule(chain, line):
+    cmd = "sudo iptables -D {} {}".format(chain.upper(), line)
+    msg = "Error"
+    try:        
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output,error = proc.communicate()
+        saveRules()
+        if output:
+            msg = "Output: {} {}".format(proc.returncode, output)
+        if error:
+            msg = "Error: {} {}".format(proc.returncode, error.strip().decode())
+        else:
+            msg = "No Error"
+    except OSError as e:
+        msg = "Error: ".format(e.errno, e.strerror, e.filename)
+    except:
+        msg = "Error: ".format(sys.exc_info()[0])
+    return msg
+
 
 def saveRules():
     subprocess.run(["sudo", "/sbin/iptables-save"])
+
+def resetRules():
+    cmd = "sudo iptables -F"
+    proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+    proc.communicate()
+    print("All rules deleted")
