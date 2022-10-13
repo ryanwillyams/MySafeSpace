@@ -1,8 +1,9 @@
+from ctypes.wintypes import HBITMAP
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
     QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar, QMessageBox
+    QListWidget,QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
 from PyQt6.QtCore import Qt
 
@@ -10,16 +11,10 @@ from views.passwordReqTab import PasswordReqTab
 from views.changePasswordTab import ChangePasswordTab
 from views.changeSudoers import ChangeSudoers
 from views.iptablesTab import IPTables
-"""
-Options for harden tab
-1. Change password requirements
-2. Change password for user(s)
-3. Change sudoers
-4. Configure SSH
-5. Disable services
-6. View logs
+from views.ServicesTab import DisableServices
 
-"""
+
+
 class HardenPage(QWidget):
     
     def __init__(self):
@@ -78,7 +73,5 @@ class HardenPage(QWidget):
 #
 
 
-class DisableServices(QWidget):
-    def __init__(self):
-        super(DisableServices,self).__init__()
+
 
