@@ -1,17 +1,6 @@
-# change_passwds.py changes the passwords of selected users 
-
-import scripts.functions as functions
+from scripts.functions import addToChangelog
 import os
 import subprocess
-
-
-# Code not needed - implemented in passwdReq.py
-# def passwd_change_req():
-#     # This function checks if any users have expired password
-#     users = functions.listUsers()
-#     for i in users:
-#         #sudo chage -l kevin | grep 'Password expires'
-#         subprocess.run[('sudo', 'chage', '-l', i, '|', 'grep', '\'Password', 'expires\'')]
 
 # Changed function to change all selected users to same password and not
 # require re-entry of password
@@ -30,6 +19,10 @@ def passwdChange(newPasswd, users):
         cmd = 'echo ' + userPass + ' | sudo chpasswd'
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         print(proc.communicate()[0])
+
+        # Add to changelog
+        addToChangelog("Changed {}'s password".format(i))
+
     
     
 def passwds_prompt():
