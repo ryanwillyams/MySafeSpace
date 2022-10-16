@@ -1,4 +1,5 @@
 import subprocess
+from scripts.functions import addToChangelog
 
 # Add and Remove users from sudo group
 
@@ -32,7 +33,15 @@ def sudoPrivPrompt():
 def addSudo(user):
     for i in user:
         subprocess.run(['sudo', 'adduser', i, 'sudo'])
+        
+        # Message to changelog
+        msg = i + " added to group sudo"
+        addToChangelog(msg)
 
 def removeSudo(user):
     for i in user:
         subprocess.run(['sudo', 'deluser', i, 'sudo'])
+
+        # Message to changelog
+        msg = i + " removed from group sudo"
+        addToChangelog(msg)
