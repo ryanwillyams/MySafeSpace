@@ -3,6 +3,7 @@
 __pycache__
 */__pycache__
 */*/__pycache__
+*/changelog.txt
 
 build
 dist
