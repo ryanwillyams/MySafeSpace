@@ -2,6 +2,8 @@ import subprocess
 import socket
 import pwd
 import re
+import logging
+
 # Creates list of all users
 def listUsers():
     UID_MIN = 1000
@@ -50,4 +52,12 @@ def list_nonsudoers():
     sudoers = list_sudoers()
     return [x for x in all_users if x not in sudoers]
 
+# Adds new changes to the change log file
+def addToChangelog(message):
+    logging.basicConfig(filename="changelog.txt", level=logging.INFO,
+                        format="%(asctime)s %(message)s")
 
+    logging.info(message)
+
+
+# Read from the changelog.txt
