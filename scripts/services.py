@@ -1,4 +1,5 @@
 import subprocess
+from scripts.functions import addToChangelog
 
 def getServices():
     cmd = "systemctl list-units --type=service --all"
@@ -45,3 +46,35 @@ def getServices():
         service['name'] = service['name'][:-len('.service')]
         
     return services
+
+# Start service
+def startService(service):
+    cmd = "systemctl start {}".format(service)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+    # Add to changelog
+    addToChangelog("Service {} started.".format(service))
+
+# Stop service
+def stopService(service):
+    cmd = "systemctl stop {}".format(service)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+    # Add to changelog
+    addToChangelog("Service {} stopped.".format(service))
+
+# Enable service
+def enableService(service):
+    cmd = "systemctl enable {}".format(service)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+    # Add to changelog
+    addToChangelog("Service {} enabled to run on boot up.".format(service))
+
+# Disable service
+def disableService(service):
+    cmd = "systemctl disable {}".format(service)
+    subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+
+    # Add to changelog
+    addToChangelog("Service {} disabled from running on boot up.".format(service))
