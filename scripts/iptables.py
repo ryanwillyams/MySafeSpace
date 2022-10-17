@@ -4,7 +4,7 @@ from cProfile import run
 from os import remove
 import subprocess
 import socket
-import scripts.functions as functions
+from scripts.functions import addToChangelog
 import sys
 
 def iptablesPrompt():
@@ -81,6 +81,9 @@ def changeChainPolicy(chain, response):
     cmd = "sudo iptables --policy {} {}".format(chain.upper(), response.upper())
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     proc.communicate()
+
+    # Add to changelog
+    addToChangelog("Changed {} chain policy to {}.".format(chain, response))
 
 def inputPolicy():
     option = ""
@@ -240,6 +243,10 @@ def addRule(chain, traffic_type, traffic, action):
             msg = "Error: {} {}".format(proc.returncode, error.strip().decode())
         else:
             msg = "No Error"
+
+            # Add to changelog
+            addToChangelog("New rule added to {} chain policy - {} {}".format(chain, action, traffic))
+
     except OSError as e:
         msg = "Error: ".format(e.errno, e.strerror, e.filename)
     except:
@@ -324,6 +331,10 @@ def removeRule(chain, line):
             msg = "Error: {} {}".format(proc.returncode, error.strip().decode())
         else:
             msg = "No Error"
+
+            # Add to changelog
+            addToChangelog("Removed rule at line {} from {} chain policy.".format(line, chain))
+
     except OSError as e:
         msg = "Error: ".format(e.errno, e.strerror, e.filename)
     except:
