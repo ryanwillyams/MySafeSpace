@@ -2,12 +2,12 @@ from PyQt6.QtWidgets import (
     QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
     QListWidget,QListWidgetItem, QScrollBar, QMessageBox, QTreeView,
-    QGroupBox, QAbstractItemView
+    QGroupBox, QAbstractItemView, QMenu
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import (Qt, QEvent)
 from PyQt6.QtGui import QStandardItemModel
 
-from scripts.services import getServices
+from scripts.services import (getServices, startService, stopService)
 
 class DisableServices(QWidget):
     def __init__(self):
@@ -31,7 +31,6 @@ class DisableServices(QWidget):
             self.addService(model, service['name'], service['active'],
                             service['sub'], service['startup type'],
                             service['description'])
-
 
         data_layout.addWidget(self.data_view)
 
@@ -59,3 +58,22 @@ class DisableServices(QWidget):
         model.setData(model.index(0, 2), status)
         model.setData(model.index(0, 3), startup)
         model.setData(model.index(0, 4), descript)
+
+    # Right-click action menu
+    def contextMenuEvent(self, event):
+        context_menu = QMenu(self)
+        start_act = context_menu.addAction("Start")
+        stop_act = context_menu.addAction("Stop")
+        enable_act = context_menu.addAction("Enable")
+        disable_act = context_menu.addAction("Disable")
+        action = context_menu.exec(self.mapToGlobal(event.pos()))
+        
+        service_name = self.data_view.currentIndex().siblingAtColumn(0).data()
+        if action == start_act:
+            startService(service_name)
+        if action == stop_act:
+            stopService(service_name)
+        if action == enable_act:
+            print(service_name)
+        if action == disable_act:
+            print(service_name)
