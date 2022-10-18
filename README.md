@@ -11,7 +11,7 @@ Having a hub to do paramount security tasks is very handy but I knew this projec
 
 - Running with GUI
   - Install PyQt6
-    - `pip install PyQt6`
+    - `sudo pip install PyQt6`
   - Run GUI with app.py
     - `sudo python3 app.py`
   
