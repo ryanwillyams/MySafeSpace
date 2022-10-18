@@ -15,17 +15,17 @@ class IPTables(QWidget):
 
         # Declare layouts
         outer_layout = QVBoxLayout()
-        rule_list = QListWidget()
+        self.rule_list = QListWidget()
         buttons_layout = QHBoxLayout()
 
         # Define Rule List layout
         rules = viewRules()
         for line in rules:
             item = QListWidgetItem(line)
-            rule_list.addItem(item)
+            self.rule_list.addItem(item)
 
         scroll_bar = QScrollBar(self)
-        rule_list.setVerticalScrollBar(scroll_bar)
+        self.rule_list.setVerticalScrollBar(scroll_bar)
 
         # Define Buttons layout
         btn_change_policy = QPushButton("Change Policies", clicked=self.chainPoliciesForm)
@@ -38,7 +38,7 @@ class IPTables(QWidget):
         buttons_layout.addWidget(btn_remove_rule)
 
         #Add sublayouts to main layout
-        outer_layout.addWidget(rule_list)
+        outer_layout.addWidget(self.rule_list)
         outer_layout.addLayout(buttons_layout)
 
         # Set windows main layout
@@ -46,29 +46,40 @@ class IPTables(QWidget):
 
     # Function call to open Chain Policy Form
     def chainPoliciesForm(self):
-        self.popup = ChainPoliciesForm()
+        self.popup = ChainPoliciesForm(self.updateRuleList)
         self.popup.setMinimumSize(300, 150)
         self.popup.show()
 
     # Function call to open Add Rule Form
     def addRuleForm(self):
-        self.popup = AddRuleForm()
+        self.popup = AddRuleForm(self.updateRuleList)
         self.popup.setMinimumSize(500, 150)
         self.popup.show()
 
     # Function call to open Remove Rule Form
     def removeRuleForm(self):
-        self.popup = RemoveRuleForm()
+        self.popup = RemoveRuleForm(self.updateRuleList)
         self.popup.setMinimumSize(250, 100)
         self.popup.show()
 
     def clearAllMsg(self):
         return 0
+    
+    def updateRuleList(self):
+        # Call when rule list changed
+        print("Updating Rule List")
+        self.rule_list.clear()
+        rules = viewRules()
+        for line in rules:
+            item = QListWidgetItem(line)
+            self.rule_list.addItem(item)
 
 class ChainPoliciesForm(QWidget):
-    def __init__(self):
+    def __init__(self,updateRuleList):
         QWidget.__init__(self)
         self.setWindowTitle("Change Chain Policy")
+
+        self.updateRuleList = updateRuleList
 
         # Declare layout
         outer_layout = QVBoxLayout()
@@ -110,12 +121,17 @@ class ChainPoliciesForm(QWidget):
         # Change Output policy
         if self.output_policy.currentText() != "Options":
             changeChainPolicy("output", self.output_policy.currentText())
+        
+        # TODO: Create check before updating
+        self.updateRuleList()
         self.close()
 
 class AddRuleForm(QWidget):
-    def __init__(self):
+    def __init__(self,updateRuleList):
         QWidget.__init__(self)
         self.setWindowTitle("Add New Rule")
+
+        self.updateRuleList = updateRuleList
 
         # Declare layouts
         outer_layout = QVBoxLayout()
@@ -155,6 +171,7 @@ class AddRuleForm(QWidget):
         result = addRule(self.chain_type.currentText(), self.network_type.currentText(), 
                 self.port_ip.text(), self.action.currentText())
         if result == "No Error":
+            self.updateRuleList()
             self.close()
         # Error Message
         else:
@@ -168,10 +185,12 @@ class AddRuleForm(QWidget):
 
 
 class RemoveRuleForm(QWidget):
-    def __init__(self):
+    def __init__(self, updateRuleList):
+    
         QWidget.__init__(self)
         self.setWindowTitle("Remove Rule")
 
+        self.updateRuleList = updateRuleList
         # Declare layouts
         outer_layout = QVBoxLayout()
         form_layout = QFormLayout()
@@ -201,6 +220,7 @@ class RemoveRuleForm(QWidget):
     def submitAction(self):
         result = removeRule(self.chain_type.currentText(), self.line_number.text())
         if result == "No Error":
+            self.updateRuleList()
             self.close()
         # Error Message
         else:
