@@ -137,7 +137,7 @@ def printRules():
     for line in rules:
         print(line)
 
-def viewRules():
+def viewRules() -> list[str]:
     cmd = "sudo iptables -L --line-numbers"
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     # proc = proc.communicate()[0].decode()

@@ -1,12 +1,16 @@
 from logging.handlers import QueueListener
+from operator import contains
 from PyQt6.QtWidgets import (
     QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
     QListWidget,QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
+from PyQt6 import QtGui
+from enum import Enum
 
 from scripts.iptables import viewRules, changeChainPolicy, addRule, removeRule
+
 
 
 class IPTables(QWidget):
@@ -21,7 +25,7 @@ class IPTables(QWidget):
         # Define Rule List layout
         rules = viewRules()
         for line in rules:
-            item = QListWidgetItem(line)
+            item = RuleListWidgetItem(line)
             self.rule_list.addItem(item)
 
         scroll_bar = QScrollBar(self)
@@ -67,12 +71,46 @@ class IPTables(QWidget):
     
     def updateRuleList(self):
         # Call when rule list changed
-        print("Updating Rule List")
         self.rule_list.clear()
         rules = viewRules()
         for line in rules:
-            item = QListWidgetItem(line)
+            item = RuleListWidgetItem(line)
             self.rule_list.addItem(item)
+
+
+class RuleListWidgetItem(QListWidgetItem):
+    line_format = '{:>6}{:>14}{:>20}{:>15}{:>10}'
+
+    def __init__(self, *args, **kwargs):
+        super(QListWidgetItem, self).__init__(*args, **kwargs)
+        
+        initial_text = self.text()
+
+        if not initial_text: # Blank Line
+            self._create_blank_line();
+        elif 'Chain' in initial_text and 'policy' in initial_text:
+            self._create_title_line()
+        else:
+            self._create_header_line()
+
+    def _create_blank_line(self):
+        # Disables selections
+        # To Enable selcection use | or instead of & ~
+        self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+
+    def _create_title_line(self):
+        self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+        self.setTextAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.setBackground(QtGui.QColor().blue())
+
+    def _create_header_line(self):
+        self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
+        line_arr = self.text().split()
+        self.setText(self.line_format.format(*line_arr))
+        # self.setBackground(QtGui.QColor().purple())
+    
+
+    
 
 class ChainPoliciesForm(QWidget):
     def __init__(self,updateRuleList):
@@ -124,6 +162,7 @@ class ChainPoliciesForm(QWidget):
         
         # TODO: Create check before updating
         self.updateRuleList()
+
         self.close()
 
 class AddRuleForm(QWidget):
