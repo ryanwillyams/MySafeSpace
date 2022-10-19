@@ -51,17 +51,20 @@ def getServices():
 def startService(service):
     cmd = "systemctl start {}".format(service)
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-
+    
     # Add to changelog
     addToChangelog("Service {} started.".format(service))
+    return True
 
 # Stop service
 def stopService(service):
     cmd = "systemctl stop {}".format(service)
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-
+    
     # Add to changelog
     addToChangelog("Service {} stopped.".format(service))
+
+    return True
 
 # Enable service
 def enableService(service):

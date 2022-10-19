@@ -19,16 +19,17 @@ class DisableServices(QWidget):
         data_group_box.setLayout(data_layout)
 
         # Define data layout
-        self.data_view = QTreeView()
+        self.data_view = ServicesTreeView(self.updateServiceItem)
         self.data_view.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.data_view.setSortingEnabled(True)
 
-        model = self.createServiceModel(self)
-        self.data_view.setModel(model)
+        self.model = self.createServiceModel(self)
+        self.data_view.setModel(self.model)
         # Populate list
+        
         services = getServices()
         for service in services:
-            self.addService(model, service['name'], service['active'],
+            self.addService(self.model, service['name'], service['active'],
                             service['sub'], service['startup type'],
                             service['description'])
 
@@ -58,6 +59,26 @@ class DisableServices(QWidget):
         model.setData(model.index(0, 2), status)
         model.setData(model.index(0, 3), startup)
         model.setData(model.index(0, 4), descript)
+    
+    def updateServiceItem(self,rowIdx,columnIdx,new_val:str)->bool:
+        # Clear the Model
+        # columnIdx = {
+        #     'name':0,
+        #     'activity':1,
+        #     'status':2,
+        #     'startup type':3,
+        #     'description':4
+        # }[columnName]
+        self.model.setData(self.model.index(rowIdx, columnIdx), new_val)
+        # self.model.setItem(rowIdx,columnIdx,new_val)
+
+
+
+
+class ServicesTreeView(QTreeView):
+    def __init__(self,updateServiceItem,*args,**kwargs):
+        super(QTreeView,self).__init__(*args,**kwargs)
+        self.updateServiceItem= updateServiceItem
 
     # Right-click action menu
     def contextMenuEvent(self, event):
@@ -66,14 +87,21 @@ class DisableServices(QWidget):
         stop_act = context_menu.addAction("Stop")
         enable_act = context_menu.addAction("Enable")
         disable_act = context_menu.addAction("Disable")
+
+
         action = context_menu.exec(self.mapToGlobal(event.pos()))
-        
-        service_name = self.data_view.currentIndex().siblingAtColumn(0).data()
+        service_name = self.currentIndex().siblingAtColumn(0).data()
+
         if action == start_act:
-            startService(service_name)
-        if action == stop_act:
-            stopService(service_name)
-        if action == enable_act:
+            if(startService(service_name)):
+                self.updateServiceItem(self.currentIndex().row(),1,"active")
+        elif action == stop_act:
+            if(stopService(service_name)):
+                self.updateServiceItem(self.currentIndex().row(),1,"inactive")
+        elif action == enable_act:
             print(service_name)
-        if action == disable_act:
+        elif action == disable_act:
             print(service_name)
+        
+
+        
