@@ -61,16 +61,7 @@ class DisableServices(QWidget):
         model.setData(model.index(0, 4), descript)
     
     def updateServiceItem(self,rowIdx,columnIdx,new_val:str)->bool:
-        # Clear the Model
-        # columnIdx = {
-        #     'name':0,
-        #     'activity':1,
-        #     'status':2,
-        #     'startup type':3,
-        #     'description':4
-        # }[columnName]
         self.model.setData(self.model.index(rowIdx, columnIdx), new_val)
-        # self.model.setItem(rowIdx,columnIdx,new_val)
 
 
 
