@@ -106,7 +106,10 @@ class RuleListWidgetItem(QListWidgetItem):
     def _create_header_line(self):
         self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
         line_arr = self.text().split()
-        self.setText(self.line_format.format(*line_arr))
+        try:
+            self.setText(self.line_format.format(*line_arr))
+        except:
+            pass
         # self.setBackground(QtGui.QColor().purple())
     
 
