@@ -68,7 +68,7 @@ class IPTables(QWidget):
 
     def clearAllMsg(self):
         return 0
-    
+
     def updateRuleList(self):
         # Call when rule list changed
         self.rule_list.clear()
@@ -83,7 +83,7 @@ class RuleListWidgetItem(QListWidgetItem):
 
     def __init__(self, *args, **kwargs):
         super(QListWidgetItem, self).__init__(*args, **kwargs)
-        
+
         initial_text = self.text()
 
         if not initial_text: # Blank Line
@@ -95,7 +95,7 @@ class RuleListWidgetItem(QListWidgetItem):
 
     def _create_blank_line(self):
         # Disables selections
-        # To Enable selcection use | or instead of & ~
+        # To Enable selection use | or instead of & ~
         self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
 
     def _create_title_line(self):
@@ -111,16 +111,21 @@ class RuleListWidgetItem(QListWidgetItem):
         except:
             pass
         # self.setBackground(QtGui.QColor().purple())
-    
 
-    
 
-class ChainPoliciesForm(QWidget):
-    def __init__(self,updateRuleList):
+class RuleFormPopDialog(QWidget):
+    #Use this Class to apply style/methods to all forms
+    def __init__(self, updateRuleList):
         QWidget.__init__(self)
-        self.setWindowTitle("Change Chain Policy")
-
         self.updateRuleList = updateRuleList
+        flags = Qt.WindowType.Sheet
+        self.setWindowFlags(flags)
+
+
+class ChainPoliciesForm(RuleFormPopDialog):
+    def __init__(self, *args, **kwargs):
+        RuleFormPopDialog.__init__(self, *args, **kwargs)
+        self.setWindowTitle("Change Chain Policy")
 
         # Declare layout
         outer_layout = QVBoxLayout()
@@ -130,13 +135,13 @@ class ChainPoliciesForm(QWidget):
         # Define form layout
         self.input_policy = QComboBox()
         self.input_policy.addItems(["Options", "Accept", "Drop"])
-        
+
         self.forward_policy = QComboBox()
         self.forward_policy.addItems(["Options", "Accept", "Drop"])
 
         self.output_policy = QComboBox()
         self.output_policy.addItems(["Options", "Accept", "Drop"])
-        
+
         form_layout.addRow(QLabel("Input Policy"), self.input_policy)
         form_layout.addRow(QLabel("Forward Policy"), self.forward_policy)
         form_layout.addRow(QLabel("Output Policy"), self.output_policy)
@@ -162,18 +167,16 @@ class ChainPoliciesForm(QWidget):
         # Change Output policy
         if self.output_policy.currentText() != "Options":
             changeChainPolicy("output", self.output_policy.currentText())
-        
+
         # TODO: Create check before updating
         self.updateRuleList()
 
         self.close()
 
-class AddRuleForm(QWidget):
-    def __init__(self,updateRuleList):
-        QWidget.__init__(self)
+class AddRuleForm(RuleFormPopDialog):
+    def __init__(self, *args, **kwargs):
+        RuleFormPopDialog.__init__(self, *args, **kwargs)
         self.setWindowTitle("Add New Rule")
-
-        self.updateRuleList = updateRuleList
 
         # Declare layouts
         outer_layout = QVBoxLayout()
@@ -186,7 +189,7 @@ class AddRuleForm(QWidget):
 
         self.network_type = QComboBox()
         self.network_type.addItems(["Options", "Port Number", "IP Address"])
-        
+
         self.port_ip = QLineEdit("ex. 433 or 192.0.10.6")
 
         self.action = QComboBox()
@@ -210,7 +213,7 @@ class AddRuleForm(QWidget):
         self.setLayout(outer_layout)
 
     def submitAction(self):
-        result = addRule(self.chain_type.currentText(), self.network_type.currentText(), 
+        result = addRule(self.chain_type.currentText(), self.network_type.currentText(),
                 self.port_ip.text(), self.action.currentText())
         if result == "No Error":
             self.updateRuleList()
@@ -226,13 +229,11 @@ class AddRuleForm(QWidget):
             msg.exec()
 
 
-class RemoveRuleForm(QWidget):
-    def __init__(self, updateRuleList):
-    
-        QWidget.__init__(self)
+class RemoveRuleForm(RuleFormPopDialog):
+    def __init__(self, *args, **kwargs):
+        RuleFormPopDialog.__init__(self, *args, **kwargs)
         self.setWindowTitle("Remove Rule")
 
-        self.updateRuleList = updateRuleList
         # Declare layouts
         outer_layout = QVBoxLayout()
         form_layout = QFormLayout()
@@ -274,4 +275,3 @@ class RemoveRuleForm(QWidget):
             # msg.setStandardButtons(QMessageBox.Ok)
             msg.exec()
 
-    
