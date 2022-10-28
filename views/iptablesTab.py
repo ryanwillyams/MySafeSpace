@@ -190,8 +190,9 @@ class AddRuleForm(RuleFormPopDialog):
         self.network_type = QComboBox()
         self.network_type.addItems(["Options", "Port Number", "IP Address"])
 
-        self.port_ip = QLineEdit("ex. 433 or 192.0.10.6")
-
+        self.port_ip = QLineEdit()
+        self.port_ip.setPlaceholderText("ex. 433 or 192.0.10.6")
+        
         self.action = QComboBox()
         self.action.addItems(["Options", "Accept", "Drop", "Reject"])
 
