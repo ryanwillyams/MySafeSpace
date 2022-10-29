@@ -9,8 +9,9 @@ from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
 from enum import Enum
 
-from scripts.iptables import viewRules, changeChainPolicy, addRule, removeRule
-
+from controller.ip_tables_controller import (
+    viewRules, changeChainPolicy, addRule, removeRule
+)
 
 
 class IPTables(QWidget):
@@ -21,6 +22,12 @@ class IPTables(QWidget):
         outer_layout = QVBoxLayout()
         self.rule_list = QListWidget()
         buttons_layout = QHBoxLayout()
+
+        # Make the font monospace or monospace adjacent
+        list_font = self.rule_list.font()
+        list_font.setFamily("Monospace")
+        list_font.setStyleHint(QtGui.QFont.StyleHint.TypeWriter)
+        self.rule_list.setFont(list_font)
 
         # Define Rule List layout
         rules = viewRules()
@@ -79,18 +86,15 @@ class IPTables(QWidget):
 
 
 class RuleListWidgetItem(QListWidgetItem):
-    line_format = '{:>6}{:>14}{:>20}{:>15}{:>10}'
-
     def __init__(self, *args, **kwargs):
         super(QListWidgetItem, self).__init__(*args, **kwargs)
 
-        initial_text = self.text()
-
-        if not initial_text: # Blank Line
-            self._create_blank_line();
-        elif 'Chain' in initial_text and 'policy' in initial_text:
+        initial_text = self.text().lstrip()
+        if not initial_text or initial_text.startswith('-'):
+            self._create_blank_line()
+        elif initial_text.startswith('Chain'):
             self._create_title_line()
-        else:
+        elif initial_text.startswith('num'):
             self._create_header_line()
 
     def _create_blank_line(self):
@@ -101,16 +105,11 @@ class RuleListWidgetItem(QListWidgetItem):
     def _create_title_line(self):
         self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
         self.setTextAlignment(Qt.AlignmentFlag.AlignHCenter)
-        self.setBackground(QtGui.QColor().blue())
+        self.setBackground(QtGui.QColor(0,0,200))
 
     def _create_header_line(self):
         self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
-        line_arr = self.text().split()
-        try:
-            self.setText(self.line_format.format(*line_arr))
-        except:
-            pass
-        # self.setBackground(QtGui.QColor().purple())
+        self.setBackground(QtGui.QColor(0,0,100))
 
 
 class RuleFormPopDialog(QWidget):
