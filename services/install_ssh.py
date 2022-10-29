@@ -2,19 +2,19 @@
 # This script is entirely in Python3 and utilizes the standard library to enable bash injection
 
 
-
 import os
 import subprocess
 
-def update_packages() :
-    # Ensure the system is up to date with installed packages 
+
+def update_packages():
+    # Ensure the system is up to date with installed packages
     print("Checking for updates...")
     subprocess.run(['sudo', 'apt', 'update'])
     subprocess.run(['sudo', 'apt', 'upgrade', '-y'])
 
 
 def install_ssh():
-    # TODO: Don't make this func run if not needed 
+    # TODO: Don't make this func run if not needed
     # This function will run every time SSH Enable is ran until there is a fix
     # Check for updates then install SSH
     update_packages()
@@ -46,25 +46,27 @@ def start_ssh():
     subprocess.run(['sudo', 'systemctl', 'enable', 'ssh'])
     subprocess.run(['sudo', 'systemctl', 'start', 'ssh'])
     # Verify the status of SSH
-    if(ssh_status() == 'Active'):
+    if (ssh_status() == 'Active'):
         print("\nThe server has been successfully activated. ")
     else:
         print("There was an issue starting the SSH Server, try again later. ")
 
+
 def stop_ssh():
-    # This function stop the SSH server 
+    # This function stop the SSH server
     subprocess.run(['sudo', 'systemctl', 'stop', 'ssh'])
     print('\nServer Stopping... Server is now ' + ssh_status())
     # Verify the status of SSH
-    if(ssh_status() == 'Inactive'):
+    if (ssh_status() == 'Inactive'):
         print('\nThe server has been successfully disabled. ')
     else:
         print('There was an issue ending the SSH Server, try again later. ')
-    
+
 
 def ssh_status_gui():
     # Check the Status of the Server in the front end
     print("\nThe server is currently " + ssh_status())
+
 
 def get_ip():
     # Return the local ip of the user's machine
@@ -104,4 +106,4 @@ def ssh_prompt():
             case "0":
                 print("Back to main menu.")
             case _:
-                print("Invalid entry.") 
+                print("Invalid entry.")

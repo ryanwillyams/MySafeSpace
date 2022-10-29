@@ -1,17 +1,18 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar, QMessageBox
+    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
+    QListWidget, QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
 
 from scripts.functions import listUsers, list_sudoers, list_nonsudoers
 from scripts.sudo_priv import addSudo, removeSudo
 
+
 class ChangeSudoers(QWidget):
     def __init__(self):
-        super(ChangeSudoers,self).__init__()
+        super(ChangeSudoers, self).__init__()
         # Declare layouts
         outer_layout = QVBoxLayout()
         top_layout = QGridLayout()
@@ -35,7 +36,7 @@ class ChangeSudoers(QWidget):
 
         # Populate Lists
         self.updateDisplayLists()
-        
+
         # Change buttons
         sudo_to_normal = QPushButton(">>", clicked=self.changeSudoToNormal)
         normal_to_sudo = QPushButton("<<", clicked=self.changeNormalToSudo)
@@ -47,7 +48,7 @@ class ChangeSudoers(QWidget):
         # Create a Wrapper for the layout
         button_wrapper = QWidget()
         button_wrapper.setLayout(middle_layout)
-        top_layout.addWidget(button_wrapper,1,1)
+        top_layout.addWidget(button_wrapper, 1, 1)
 
         # Add sublayouts to main layout
         outer_layout.addLayout(top_layout)
@@ -61,8 +62,9 @@ class ChangeSudoers(QWidget):
         checked_sudoers = []
         for index in range(self.sudoer_list_display.count()):
             if self.sudoer_list_display.item(index).checkState() == Qt.CheckState.Checked:
-                checked_sudoers.append(self.sudoer_list_display.item(index).text())
-        
+                checked_sudoers.append(
+                    self.sudoer_list_display.item(index).text())
+
         # Only called if there were checked values
         if checked_sudoers:
             removeSudo(checked_sudoers)
@@ -73,12 +75,12 @@ class ChangeSudoers(QWidget):
         checked_normals = []
         for index in range(self.normal_user_list_display.count()):
             if self.normal_user_list_display.item(index).checkState() == Qt.CheckState.Checked:
-                checked_normals.append(self.normal_user_list_display.item(index).text())
+                checked_normals.append(
+                    self.normal_user_list_display.item(index).text())
         # Only called if there were checked values
         if checked_normals:
             addSudo(checked_normals)
             self.updateDisplayLists()
-
 
     def updateDisplayLists(self):
 
@@ -87,7 +89,8 @@ class ChangeSudoers(QWidget):
         sudoer_list = list_sudoers()
         for sudoer in sudoer_list:
             item = UserListItem(sudoer)
-            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable |
+                          Qt.ItemFlag.ItemIsEnabled)
             item.setCheckState(Qt.CheckState.Unchecked)
             self.sudoer_list_display.addItem(item)
 
@@ -100,7 +103,8 @@ class ChangeSudoers(QWidget):
 
 
 class UserListItem(QListWidgetItem):
-    def __init__(self,*args,**kwargs):
-        super(QListWidgetItem,self).__init__(*args,**kwargs)
-        self.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+    def __init__(self, *args, **kwargs):
+        super(QListWidgetItem, self).__init__(*args, **kwargs)
+        self.setFlags(Qt.ItemFlag.ItemIsUserCheckable |
+                      Qt.ItemFlag.ItemIsEnabled)
         self.setCheckState(Qt.CheckState.Unchecked)

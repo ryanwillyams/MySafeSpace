@@ -8,9 +8,9 @@ with Popen(makegroup, stdout=PIPE, stderr=None, shell=True) as process:
     print(output)
 
 with Popen(subgroup, stdout=PIPE, stderr=None, shell=True) as process:
-    output2= process.communicate()[0].decode("utf-8")
+    output2 = process.communicate()[0].decode("utf-8")
     print(output2)
 
 with Popen(permit, stdout=PIPE, stderr=None, shell=True) as process:
-    output3= process.communicate()[0].decode("utf-8")
+    output3 = process.communicate()[0].decode("utf-8")
     print(output3)

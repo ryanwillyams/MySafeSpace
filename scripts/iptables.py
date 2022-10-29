@@ -7,6 +7,7 @@ import socket
 from scripts.functions import addToChangelog
 import sys
 
+
 def iptablesPrompt():
     option = ""
     while option != "0":
@@ -41,7 +42,8 @@ def iptablesPrompt():
             case "0":
                 print("Back to main menu.")
             case _:
-                print("Invalid entry.") 
+                print("Invalid entry.")
+
 
 def chainPromt():
     option = ""
@@ -72,42 +74,47 @@ def chainPromt():
             case _:
                 print("Invalid entry.")
 
+
 def viewChainPolicies():
     cmd = "sudo iptables -L | grep policy"
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     print(proc.communicate()[0].decode())
 
+
 def changeChainPolicy(chain, response):
-    cmd = "sudo iptables --policy {} {}".format(chain.upper(), response.upper())
+    cmd = "sudo iptables --policy {} {}".format(
+        chain.upper(), response.upper())
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     proc.communicate()
 
     # Add to changelog
     addToChangelog("Changed {} chain policy to {}.".format(chain, response))
 
+
 def inputPolicy():
     option = ""
     option = input("To change chain INPUT policy type 'ACCEPT' or 'DROP';\n"
-                    "or type exit to go back: ")
+                   "or type exit to go back: ")
     option.lower()
-                
+
     if option == "accept" or option == "drop":
         changeChainPolicy("INPUT", option)
     elif option == "exit":
         print("Back to chain policies.")
     else:
         print("Invalid entry.")
-    
+
 
 def outputPolicy():
     option = ""
     option = input("To change chain OUTPUT policy type 'ACCEPT' or 'DROP';\n"
-                    "or type exit to go back: ")
+                   "or type exit to go back: ")
     option.lower()
-                
+
     match option:
         case "accept":
-            subprocess.run(["sudo", "iptables", "--policy", "OUTPUT", "ACCEPT"])
+            subprocess.run(
+                ["sudo", "iptables", "--policy", "OUTPUT", "ACCEPT"])
         case "drop":
             subprocess.run(["sudo", "iptables", "--policy", "OUTPUT", "DROP"])
         case "exit":
@@ -115,15 +122,17 @@ def outputPolicy():
         case _:
             print("Invalid entry.")
 
+
 def forwardPolicy():
     option = ""
     option = input("To change chain FORWARD policy type 'ACCEPT' or 'DROP';\n"
-                    "or type exit to go back: ")
+                   "or type exit to go back: ")
     option.lower()
-                
+
     match option:
         case "accept":
-            subprocess.run(["sudo", "iptables", "--policy", "FORWARD", "ACCEPT"])
+            subprocess.run(
+                ["sudo", "iptables", "--policy", "FORWARD", "ACCEPT"])
         case "drop":
             subprocess.run(["sudo", "iptables", "--policy", "FORWARD", "DROP"])
         case "exit":
@@ -132,16 +141,19 @@ def forwardPolicy():
             print("Invalid entry.")
 
 # Prints out all existing rules
+
+
 def printRules():
     rules = viewRules()
     for line in rules:
         print(line)
 
+
 def viewRules() -> list[str]:
     cmd = "sudo iptables -L --line-numbers"
     proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     # proc = proc.communicate()[0].decode()
-    
+
     rules = []
     while True:
         line = proc.stdout.readline().decode()
@@ -152,6 +164,8 @@ def viewRules() -> list[str]:
     return rules
 
 # Adds rule to IPTables
+
+
 def addRulePrompt():
     print("Type 'exit' at anytime to leave.")
     # Select chain type
@@ -164,7 +178,7 @@ def addRulePrompt():
         elif chain == "forward":
             print("Forward implementations not set yet")
         else:
-            print("Not valid option, try again.")    
+            print("Not valid option, try again.")
     if chain == "exit":
         return False
 
@@ -190,7 +204,8 @@ def addRulePrompt():
 
     # Select allow, deny, or reject
     while True:
-        action = input("What response do you want: 'ACCEPT', 'DROP', or 'REJECT'?\n")
+        action = input(
+            "What response do you want: 'ACCEPT', 'DROP', or 'REJECT'?\n")
         action.lower()
         if action == "accept" or action == "drop" or action == "reject" or action == "exit":
             break
@@ -200,7 +215,7 @@ def addRulePrompt():
         return False
     addRule(chain, trafficType, traffic, action)
     print("Rule is created")
-    
+
 
 def addRule(chain, traffic_type, traffic, action):
     traffic = "'" + traffic + "'"
@@ -219,7 +234,7 @@ def addRule(chain, traffic_type, traffic, action):
         # else:
         #     return False
         cmd = "sudo iptables -A {} {} tcp {} {} -j {}".format(
-                chain.upper(), traffic_flag, destination, traffic, action.upper())
+            chain.upper(), traffic_flag, destination, traffic, action.upper())
     # IP Address path
     # elif traffic_type.lower() == "ip" or traffic_type.lower() == "ip address":
     #     if not validateIpAddress(traffic):
@@ -231,21 +246,24 @@ def addRule(chain, traffic_type, traffic, action):
     #     return False
     else:
         cmd = "sudo iptables -A {} {} {} -j {}".format(
-                chain.upper(), traffic_flag, traffic, action.upper())
+            chain.upper(), traffic_flag, traffic, action.upper())
     msg = "Error"
-    try:        
-        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output,error = proc.communicate()
+    try:
+        proc = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = proc.communicate()
         saveRules()
         if output:
             msg = "Output: {} {}".format(proc.returncode, output)
         if error:
-            msg = "Error: {} {}".format(proc.returncode, error.strip().decode())
+            msg = "Error: {} {}".format(
+                proc.returncode, error.strip().decode())
         else:
             msg = "No Error"
 
             # Add to changelog
-            addToChangelog("New rule added to {} chain policy - {} {}".format(chain, action, traffic))
+            addToChangelog(
+                "New rule added to {} chain policy - {} {}".format(chain, action, traffic))
 
     except OSError as e:
         msg = "Error: ".format(e.errno, e.strerror, e.filename)
@@ -253,20 +271,21 @@ def addRule(chain, traffic_type, traffic, action):
         msg = "Error: ".format(sys.exc_info()[0])
     return msg
 
-    
 
 # Checks if port number is valid
 def portNum():
     while True:
         port = (input("Enter port number\n"))
         if validatePortNum(port):
-            return str(port)    
-        elif port =="exit":
+            return str(port)
+        elif port == "exit":
             return port
-        
+
         print("Invalid port number. Ensure number is between 1-65535")
 
 # Checks if port number is valid
+
+
 def validatePortNum(port):
     if port.isnumeric():
         port = int(port)
@@ -275,15 +294,20 @@ def validatePortNum(port):
     return False
 
 # Checks if ip address is valid
+
+
 def ipNum():
     while True:
         ip = input("Enter IP Address\n")
         if validateIpAddress(ip) or ip == "exit":
             return ip
         else:
-            print("Invalid IP Address. ensure Address is between 0.0.0.0 and 255.255.255.255")
+            print(
+                "Invalid IP Address. ensure Address is between 0.0.0.0 and 255.255.255.255")
 
 # Validates IP Address
+
+
 def validateIpAddress(ip):
     try:
         socket.inet_aton(ip)
@@ -292,6 +316,8 @@ def validateIpAddress(ip):
         return False
 
 # Removes rule from IPTables
+
+
 def removeRulePrompt():
     printRules()
     print("Type 'exit' at anytime to leave.")
@@ -303,14 +329,14 @@ def removeRulePrompt():
         if chain == "input" or chain == "output" or chain == "forward" or chain == "exit":
             break
         else:
-            print("Not valid option, try again.")    
+            print("Not valid option, try again.")
     if chain == "exit":
         return False
     # Select line to delete
     while True:
         line = input("Enter line number of rule you wish to remove.\n")
         if line.isdigit() or line == "exit":
-          break
+            break
         else:
             print("Invalid entry. Please enter a number")
     if line == "exit":
@@ -318,22 +344,26 @@ def removeRulePrompt():
     # Execution
     removeRule(chain, line)
 
+
 def removeRule(chain, line):
     cmd = "sudo iptables -D {} {}".format(chain.upper(), line)
     msg = "Error"
-    try:        
-        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        output,error = proc.communicate()
+    try:
+        proc = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = proc.communicate()
         saveRules()
         if output:
             msg = "Output: {} {}".format(proc.returncode, output)
         if error:
-            msg = "Error: {} {}".format(proc.returncode, error.strip().decode())
+            msg = "Error: {} {}".format(
+                proc.returncode, error.strip().decode())
         else:
             msg = "No Error"
 
             # Add to changelog
-            addToChangelog("Removed rule at line {} from {} chain policy.".format(line, chain))
+            addToChangelog(
+                "Removed rule at line {} from {} chain policy.".format(line, chain))
 
     except OSError as e:
         msg = "Error: ".format(e.errno, e.strerror, e.filename)
@@ -344,6 +374,7 @@ def removeRule(chain, line):
 
 def saveRules():
     subprocess.run(["sudo", "/sbin/iptables-save"])
+
 
 def resetRules():
     cmd = "sudo iptables -F"

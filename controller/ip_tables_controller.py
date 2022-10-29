@@ -4,13 +4,13 @@ from tabulate import tabulate
 from scripts import iptables
 
 
-def _parse_rules(rules_raw : list[str]) -> list[str]:
+def _parse_rules(rules_raw: list[str]) -> list[str]:
     """
     This is meant to parse the table that comes from the
     `sudo iptables -L --line-numbers` command into a format
     that is suitable to display in QtListView
     """
-    if not isinstance(rules_raw,list):
+    if not isinstance(rules_raw, list):
         raise ValueError(f"Cannot parse {type(rules_raw)} need list[str]")
     if not rules_raw:
         raise ValueError("Input to _parse_rules is empty")
@@ -32,7 +32,7 @@ def _parse_rules(rules_raw : list[str]) -> list[str]:
                     result += tabulate(table, headers=headers).split('\n')
                 else:
                     result += tabulate([""]).split('\n')
-                
+
                 headers, table = [], []
                 in_chain = False
             continue
@@ -40,7 +40,7 @@ def _parse_rules(rules_raw : list[str]) -> list[str]:
             result.append(line)
             continue
         if line.startswith('target') \
-            or line.startswith('num'):
+                or line.startswith('num'):
 
             headers = line.split()
             in_chain = True
@@ -54,17 +54,20 @@ def _parse_rules(rules_raw : list[str]) -> list[str]:
             table.append(begin + [extra])
     return result
 
+
 def viewRules() -> list[str]:
     rules_str = iptables.viewRules()
-    
+
     return _parse_rules(rules_str)
+
 
 def addRule(*args):
     iptables.addRule(*args)
 
+
 def removeRule(*args):
     iptables.removeRule(*args)
 
+
 def changeChainPolicy(*args):
     iptables.changeChainPolicy(*args)
-    

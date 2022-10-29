@@ -5,6 +5,8 @@ import re
 import logging
 
 # Creates list of all users
+
+
 def listUsers():
     UID_MIN = 1000
     UID_MAX = 60000
@@ -35,6 +37,8 @@ def listUsers():
     return userList
 
 # List all sudoers
+
+
 def list_sudoers():
     sudoers = []
 
@@ -43,16 +47,20 @@ def list_sudoers():
     sudoers = proc.stdout.read().decode()
     sudoers = sudoers.rstrip('\n')
     sudoers_list = sudoers.split(",")
-    
+
     return sudoers_list
 
 # Lists all non-sudoers
+
+
 def list_nonsudoers():
     all_users = listUsers()
     sudoers = list_sudoers()
     return [x for x in all_users if x not in sudoers]
 
 # Adds new changes to the change log file
+
+
 def addToChangelog(message):
     logging.basicConfig(filename="changelog.txt", level=logging.INFO,
                         format="%(asctime)s %(message)s")

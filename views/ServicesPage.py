@@ -1,18 +1,19 @@
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar, QMessageBox, QTreeView
+    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
+    QListWidget, QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
 from PyQt6.QtCore import Qt
 
 from views.systemCare import SystemCare
 from views.automaticBackup import AutomaticBackup
 
+
 class ServicesPage(QWidget):
-    
+
     def __init__(self):
-        super(ServicesPage,self).__init__()
-        
+        super(ServicesPage, self).__init__()
+
         # Declare layout
         outer_layout = QHBoxLayout()
 
@@ -25,12 +26,12 @@ class ServicesPage(QWidget):
         auto_backup = AutomaticBackup()
 
         tab_views = {
-            'System Care' : system_care,
-            'Automatic Backup' : auto_backup
+            'System Care': system_care,
+            'Automatic Backup': auto_backup
         }
 
-        for view_name,view in tab_views.items():
-            services.addTab(view,view_name)
+        for view_name, view in tab_views.items():
+            services.addTab(view, view_name)
 
         # Add widget to layout
         outer_layout.addWidget(services)

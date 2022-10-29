@@ -1,6 +1,7 @@
 from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtCore import Qt
 
+
 def get_dark_color_theme():
     palette = QPalette()
     qtgc = Qt.GlobalColor
@@ -17,5 +18,5 @@ def get_dark_color_theme():
     palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
     palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
     palette.setColor(QPalette.ColorRole.HighlightedText, qtgc.black)
-    palette.setColor(QPalette.ColorRole.PlaceholderText,QColor(100, 100, 100))
+    palette.setColor(QPalette.ColorRole.PlaceholderText, QColor(100, 100, 100))
     return palette

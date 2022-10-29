@@ -1,9 +1,9 @@
 from logging.handlers import QueueListener
 from operator import contains
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar, QMessageBox
+    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
+    QListWidget, QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
@@ -16,7 +16,7 @@ from controller.ip_tables_controller import (
 
 class IPTables(QWidget):
     def __init__(self):
-        super(IPTables,self).__init__()
+        super(IPTables, self).__init__()
 
         # Declare layouts
         outer_layout = QVBoxLayout()
@@ -39,16 +39,18 @@ class IPTables(QWidget):
         self.rule_list.setVerticalScrollBar(scroll_bar)
 
         # Define Buttons layout
-        btn_change_policy = QPushButton("Change Policies", clicked=self.chainPoliciesForm)
+        btn_change_policy = QPushButton(
+            "Change Policies", clicked=self.chainPoliciesForm)
         btn_add_rule = QPushButton("Add Rule", clicked=self.addRuleForm)
-        btn_remove_rule = QPushButton("Remove Rule", clicked=self.removeRuleForm)
+        btn_remove_rule = QPushButton(
+            "Remove Rule", clicked=self.removeRuleForm)
         btn_clear_all = QPushButton("Clear All", clicked=self.clearAllMsg)
 
         buttons_layout.addWidget(btn_change_policy)
         buttons_layout.addWidget(btn_add_rule)
         buttons_layout.addWidget(btn_remove_rule)
 
-        #Add sublayouts to main layout
+        # Add sublayouts to main layout
         outer_layout.addWidget(self.rule_list)
         outer_layout.addLayout(buttons_layout)
 
@@ -105,15 +107,15 @@ class RuleListWidgetItem(QListWidgetItem):
     def _create_title_line(self):
         self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
         self.setTextAlignment(Qt.AlignmentFlag.AlignHCenter)
-        self.setBackground(QtGui.QColor(0,0,200))
+        self.setBackground(QtGui.QColor(0, 0, 200))
 
     def _create_header_line(self):
         self.setFlags(self.flags() & ~Qt.ItemFlag.ItemIsSelectable)
-        self.setBackground(QtGui.QColor(0,0,100))
+        self.setBackground(QtGui.QColor(0, 0, 100))
 
 
 class RuleFormPopDialog(QWidget):
-    #Use this Class to apply style/methods to all forms
+    # Use this Class to apply style/methods to all forms
     def __init__(self, updateRuleList):
         QWidget.__init__(self)
         self.updateRuleList = updateRuleList
@@ -172,6 +174,7 @@ class ChainPoliciesForm(RuleFormPopDialog):
 
         self.close()
 
+
 class AddRuleForm(RuleFormPopDialog):
     def __init__(self, *args, **kwargs):
         RuleFormPopDialog.__init__(self, *args, **kwargs)
@@ -191,7 +194,7 @@ class AddRuleForm(RuleFormPopDialog):
 
         self.port_ip = QLineEdit()
         self.port_ip.setPlaceholderText("ex. 433 or 192.0.10.6")
-        
+
         self.action = QComboBox()
         self.action.addItems(["Options", "Accept", "Drop", "Reject"])
 
@@ -214,7 +217,7 @@ class AddRuleForm(RuleFormPopDialog):
 
     def submitAction(self):
         result = addRule(self.chain_type.currentText(), self.network_type.currentText(),
-                self.port_ip.text(), self.action.currentText())
+                         self.port_ip.text(), self.action.currentText())
         if result == "No Error":
             self.updateRuleList()
             self.close()
@@ -223,7 +226,8 @@ class AddRuleForm(RuleFormPopDialog):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Error Invalid Entry")
-            msg.setText("One of the entries is invalid, check details for more information")
+            msg.setText(
+                "One of the entries is invalid, check details for more information")
             msg.setDetailedText(result)
             # msg.setStandardButtons(QMessageBox.Ok)
             msg.exec()
@@ -261,7 +265,8 @@ class RemoveRuleForm(RuleFormPopDialog):
         self.setLayout(outer_layout)
 
     def submitAction(self):
-        result = removeRule(self.chain_type.currentText(), self.line_number.text())
+        result = removeRule(self.chain_type.currentText(),
+                            self.line_number.text())
         if result == "No Error":
             self.updateRuleList()
             self.close()
@@ -270,8 +275,8 @@ class RemoveRuleForm(RuleFormPopDialog):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Error Invalid Entry")
-            msg.setText("One of the entries is invalid, check details for more information")
+            msg.setText(
+                "One of the entries is invalid, check details for more information")
             msg.setDetailedText(result)
             # msg.setStandardButtons(QMessageBox.Ok)
             msg.exec()
-

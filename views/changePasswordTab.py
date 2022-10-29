@@ -1,17 +1,18 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar, QMessageBox
+    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
+    QListWidget, QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
 
 from scripts.functions import listUsers, list_sudoers, list_nonsudoers
 from scripts.change_passwds import passwdChange
 
+
 class ChangePasswordTab(QWidget):
     def __init__(self):
-        super(ChangePasswordTab,self).__init__()
+        super(ChangePasswordTab, self).__init__()
 
         # Layout
         main_layout = QVBoxLayout()
@@ -32,7 +33,8 @@ class ChangePasswordTab(QWidget):
         main_layout.addWidget(self.newPasswd)
 
         # Submit buttom
-        self.submit_button = QPushButton("Submit", clicked=self.changeCheckedUsers)
+        self.submit_button = QPushButton(
+            "Submit", clicked=self.changeCheckedUsers)
         main_layout.addWidget(self.submit_button)
         self.setLayout(main_layout)
 
@@ -40,7 +42,8 @@ class ChangePasswordTab(QWidget):
         users_list = listUsers()
         for user in users_list:
             item = QListWidgetItem(user)
-            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEnabled)
+            item.setFlags(Qt.ItemFlag.ItemIsUserCheckable |
+                          Qt.ItemFlag.ItemIsEnabled)
             item.setCheckState(Qt.CheckState.Unchecked)
             self.user_list_display.addItem(item)
 

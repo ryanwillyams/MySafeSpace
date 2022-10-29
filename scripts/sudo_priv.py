@@ -3,6 +3,7 @@ from scripts.functions import addToChangelog
 
 # Add and Remove users from sudo group
 
+
 def sudoPrivPrompt():
     option = ""
     while option != "0":
@@ -30,13 +31,15 @@ def sudoPrivPrompt():
             case _:
                 print("Invalid entry.")
 
+
 def addSudo(user):
     for i in user:
         subprocess.run(['sudo', 'adduser', i, 'sudo'])
-        
+
         # Message to changelog
         msg = i + " added to group sudo"
         addToChangelog(msg)
+
 
 def removeSudo(user):
     for i in user:

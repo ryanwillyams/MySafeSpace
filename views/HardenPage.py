@@ -1,9 +1,9 @@
 from ctypes.wintypes import HBITMAP
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget,QTabWidget,QFormLayout,QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton,QLineEdit,QCheckBox, QSpinBox, QComboBox,
-    QListWidget,QListWidgetItem, QScrollBar, QMessageBox, QTreeView
+    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
+    QListWidget, QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
 from PyQt6.QtCore import Qt
 
@@ -14,12 +14,11 @@ from views.iptablesTab import IPTables
 from views.ServicesTab import DisableServices
 
 
-
 class HardenPage(QWidget):
-    
+
     def __init__(self):
-        super(HardenPage,self).__init__()
-        
+        super(HardenPage, self).__init__()
+
         # Layout
         self.layout = QGridLayout(self)
 
@@ -41,7 +40,7 @@ class HardenPage(QWidget):
         list_widget.addItem(disableServices)
         list_widget.addItem(iptables)
         list_widget.itemClicked.connect(self.change_tab)
-        
+
         # Scrollbar formatting
         scroll_bar = QScrollBar(self)
         list_widget.setVerticalScrollBar(scroll_bar)
@@ -49,29 +48,25 @@ class HardenPage(QWidget):
         self.layout.addWidget(self.current_tab, 0, 1)
 
         self.setLayout(self.layout)
-    
+
     # Function for changing between different menus
     def change_tab(self, item):
         self.current_tab.close()
         match item.text():
-            case "Password Requirements":                
+            case "Password Requirements":
                 self.current_tab = PasswordReqTab()
             case "Change Password":
-                self.current_tab = ChangePasswordTab()                
-            case "Change Sudoers":                
-                self.current_tab = ChangeSudoers()                
-            case "Disable Services":                
-                self.current_tab = DisableServices()                
-            case "IPTables":                
-                self.current_tab = IPTables()                
+                self.current_tab = ChangePasswordTab()
+            case "Change Sudoers":
+                self.current_tab = ChangeSudoers()
+            case "Disable Services":
+                self.current_tab = DisableServices()
+            case "IPTables":
+                self.current_tab = IPTables()
         self.layout.addWidget(self.current_tab, 0, 1)
 
-#TODO Add better Styling to password requirements
+# TODO Add better Styling to password requirements
 # - Better Text Area
 # - Smaller Buttons
 # - Closer labels
 #
-
-
-
-
