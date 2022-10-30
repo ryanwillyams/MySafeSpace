@@ -7,8 +7,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import (Qt, QEvent)
 from PyQt6.QtGui import QStandardItemModel
 
-from scripts.services import (getServices, startService, stopService)
+from scripts.services import (getServices, startService, stopService,
+    enableService, disableService)
 
+#TODO: Perform a real live update
 
 class DisableServices(QWidget):
     def __init__(self):
@@ -30,6 +32,7 @@ class DisableServices(QWidget):
         # Populate list
 
         services = getServices()
+        services.reverse()
         for service in services:
             self.addService(self.model, service['name'], service['active'],
                             service['sub'], service['startup type'],
@@ -82,14 +85,20 @@ class ServicesTreeView(QTreeView):
         action = context_menu.exec(self.mapToGlobal(event.pos()))
         service_name = self.currentIndex().siblingAtColumn(0).data()
 
+        # If statement just pseudo 'updates' service. Would prefer
+        # an actually reading of service status.
         if action == start_act:
             if (startService(service_name)):
                 self.updateServiceItem(self.currentIndex().row(), 1, "active")
+                self.updateServiceItem(self.currentIndex().row(), 2, "running")
         elif action == stop_act:
             if (stopService(service_name)):
-                self.updateServiceItem(
-                    self.currentIndex().row(), 1, "inactive")
+                self.updateServiceItem(self.currentIndex().row(), 1, "inactive")
+                self.updateServiceItem(self.currentIndex().row(), 2, "dead")
         elif action == enable_act:
-            print(service_name)
+            enableService(service_name)    
+            self.updateServiceItem(self.currentIndex().row(), 3, "enabled")
         elif action == disable_act:
-            print(service_name)
+            disableService(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 3, "disabled")
+                
