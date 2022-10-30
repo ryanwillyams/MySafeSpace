@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
 
 from views.ResourcesPage import ResourcesPage
-from views.HardenPage import HardenPage
+from views.HardenPage import HardenMainPage
 from views.ServicesPage import ServicesPage
 
 
@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         tabs = QTabWidget()
         tabs.setMovable(False)
 
-        hardenPage = HardenPage()
+        hardenPage = HardenMainPage()
         servicesPage = ServicesPage()
         resourcesPage = ResourcesPage()
 
