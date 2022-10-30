@@ -1,6 +1,8 @@
 import subprocess
 from scripts.functions import addToChangelog
 
+# TODO: If service is stopped and disabled will not show up in list.
+# Figure out how to list those services and failed services.
 
 def getServices():
     cmd = "systemctl list-units --type=service --all"
