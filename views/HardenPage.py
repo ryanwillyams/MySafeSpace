@@ -173,9 +173,11 @@ class UILogs(QWidget):
 
         # Define logs views
         self.logs = QListWidget()
-        
-        for line in reversed(list(open('changelog.txt'))):
-            self.logs.addItem(line.rstrip())
+        try:
+            for line in reversed(list(open('changelog.txt'))):
+                self.logs.addItem(line.rstrip())
+        except:
+            f = open('changelog.txt', 'x')
 
         # Add sublayouts to outer layout
         self.outer_layout.addLayout(top_layout)
