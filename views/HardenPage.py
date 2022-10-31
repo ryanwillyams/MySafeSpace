@@ -41,6 +41,7 @@ class HardenMainPage(QWidget):
 
     def logView(self):
         self.uiFront.hide()
+        self.uiLogs.refreshLogs()
         self.uiLogs.show()
 
     def frontView(self):
@@ -91,13 +92,6 @@ class UIFront(QWidget):
 
         # Set main window layout
         self.setLayout(outer_layout)
-
-    def customizePage(self):
-        
-        pass
-
-    def logsPage(self):
-        pass
 
 class UICustomize(QWidget):
     def __init__(self):
@@ -168,7 +162,7 @@ class UILogs(QWidget):
         super(UILogs, self).__init__()
 
         # Declare layouts
-        outer_layout = QVBoxLayout()
+        self.outer_layout = QVBoxLayout()
         top_layout = QHBoxLayout()
 
         # Define top layout
@@ -178,15 +172,24 @@ class UILogs(QWidget):
         top_layout.addWidget(self.btn_back)
 
         # Define logs views
-        logs = QListWidget()
+        self.logs = QListWidget()
         
-        with open('changelog.txt', 'r') as change_log:
-            for line in change_log:
-                logs.addItem(line.rstrip())
+        for line in reversed(list(open('changelog.txt'))):
+            self.logs.addItem(line.rstrip())
 
         # Add sublayouts to outer layout
-        outer_layout.addLayout(top_layout)
-        outer_layout.addWidget(logs)
+        self.outer_layout.addLayout(top_layout)
+        self.outer_layout.addWidget(self.logs)
 
         # Set layout to main view
-        self.setLayout(outer_layout)
+        self.setLayout(self.outer_layout)
+
+    def refreshLogs(self):
+        self.logs.close()
+        new_logs = QListWidget()
+
+        for line in reversed(list(open('changelog.txt'))):
+            new_logs.addItem(line.rstrip())
+
+        self.logs = new_logs
+        self.outer_layout.addWidget(self.logs)
