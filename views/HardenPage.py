@@ -100,7 +100,7 @@ class UICustomize(QWidget):
         # Declare layouts
         outer_layout = QVBoxLayout()
         top_layout = QHBoxLayout()
-        self.layout = QGridLayout()
+        self.bottom_layout = QHBoxLayout()
 
         # Define top layout
         top_layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
@@ -115,47 +115,75 @@ class UICustomize(QWidget):
         list_widget.setMaximumWidth(180)
 
         # Scrollbar List
-        passReqTab = QListWidgetItem("Password Requirements")
-        changePassTab = QListWidgetItem("Change Password")
-        changeSudoers = QListWidgetItem("Change Sudoers")
-        disableServices = QListWidgetItem("Disable Services")
-        iptables = QListWidgetItem("IPTables")
-        self.current_tab = PasswordReqTab()
+        list_passReqTab = QListWidgetItem("Password Requirements")
+        list_changePassTab = QListWidgetItem("Change Password")
+        list_changeSudoers = QListWidgetItem("Change Sudoers")
+        list_disableServices = QListWidgetItem("Services")
+        list_iptables = QListWidgetItem("IPTables")
 
-        list_widget.addItem(passReqTab)
-        list_widget.addItem(changePassTab)
-        list_widget.addItem(changeSudoers)
-        list_widget.addItem(disableServices)
-        list_widget.addItem(iptables)
+        list_widget.addItem(list_passReqTab)
+        list_widget.addItem(list_changePassTab)
+        list_widget.addItem(list_changeSudoers)
+        list_widget.addItem(list_disableServices)
+        list_widget.addItem(list_iptables)
         list_widget.itemClicked.connect(self.change_tab)
+
+        # Create list widgets
+        self.passReqTab = PasswordReqTab()
+        self.changePassTab = ChangePasswordTab()
+        self.changeSudoers = ChangeSudoers()
+        self.disableServices = DisableServices()
+        self.iptables = IPTables()
+
+        self.tabs = [self.passReqTab, self.changePassTab, self.changeSudoers,
+                self.disableServices, self.iptables]
+        self.current_tab = 0
 
         # Scrollbar formatting
         scroll_bar = QScrollBar(self)
         list_widget.setVerticalScrollBar(scroll_bar)
-        self.layout.addWidget(list_widget, 0, 0)
-        self.layout.addWidget(self.current_tab, 0, 1)
+        self.bottom_layout.addWidget(list_widget)
+        self.bottom_layout.addWidget(self.tabs[0])
+        self.bottom_layout.addWidget(self.tabs[1])
+        self.bottom_layout.addWidget(self.tabs[2])
+        self.bottom_layout.addWidget(self.tabs[3])
+        self.bottom_layout.addWidget(self.tabs[4])
+
+        # Hide all widgets besides first
+        self.changePassTab.hide()
+        self.changeSudoers.hide()
+        self.disableServices.hide()
+        self.iptables.hide()
 
         # Add sub layouts to outer layout
         outer_layout.addLayout(top_layout)
-        outer_layout.addLayout(self.layout)
+        outer_layout.addLayout(self.bottom_layout)
 
         self.setLayout(outer_layout)
 
     # Function for changing between different menus
     def change_tab(self, item):
-        self.current_tab.close()
         match item.text():
             case "Password Requirements":
-                self.current_tab = PasswordReqTab()
+                self.tabs[self.current_tab].hide()
+                self.passReqTab.show()
+                self.current_tab = 0
             case "Change Password":
-                self.current_tab = ChangePasswordTab()
+                self.tabs[self.current_tab].hide()
+                self.changePassTab.show()
+                self.current_tab = 1
             case "Change Sudoers":
-                self.current_tab = ChangeSudoers()
-            case "Disable Services":
-                self.current_tab = DisableServices()
+                self.tabs[self.current_tab].hide()
+                self.changeSudoers.show()
+                self.current_tab = 2
+            case "Services":
+                self.tabs[self.current_tab].hide()
+                self.disableServices.show()
+                self.current_tab = 3
             case "IPTables":
-                self.current_tab = IPTables()
-        self.layout.addWidget(self.current_tab, 0, 1)
+                self.tabs[self.current_tab].hide()
+                self.iptables.show()
+                self.current_tab = 4
 
 class UILogs(QWidget):
     def __init__(self):
