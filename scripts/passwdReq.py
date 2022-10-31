@@ -148,9 +148,9 @@ def passwdExpirConfig(maxDay, minDay, warn):
         subprocess.run(["chage", "-m", minDay, user])
         subprocess.run(["chage", "-W", warn, user])
 
-###########################################
-# New code
-###########################################
+########################################################################
+# New code - Delete above after developing headless UI
+########################################################################
 
 # Fetch all current password requirements on machine
 def fetchRequirements():
