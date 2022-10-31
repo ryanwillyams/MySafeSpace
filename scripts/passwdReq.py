@@ -251,7 +251,7 @@ def changeMaxDays(max):
     # Add to logs
     if max != str(getMaxDays()):
         addToChangelog("Changed maximum number of days password may be used to {} days.".format(max))
-        writeToConfig('PASS__MAX_DAYS\t', max)
+        writeToConfig('PASS_MAX_DAYS\t', max)
 
 def changeMinDays(min):
     parameter = "s/^PASS_MIN_DAYS\t.*$/PASS_MIN_DAYS\t" + min + "/"
@@ -264,7 +264,7 @@ def changeMinDays(min):
     # Add to logs
     if min != str(getMinDays()):
         addToChangelog("Changed minimum number of days allowed between password changes to {} days.".format(min))
-        writeToConfig('PASS__MIN_DAYS\t', min)
+        writeToConfig('PASS_MIN_DAYS\t', min)
 
 def changeWarnDays(warn):
     parameter = "s/^PASS_WARN_AGE\t.*$/PASS_WARN_AGE\t" + warn + "/"
