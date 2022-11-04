@@ -1,13 +1,11 @@
 from logging.handlers import QueueListener
-from operator import contains
 from PyQt6.QtWidgets import (
-    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
+    QWidget, QFormLayout, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QLineEdit, QSpinBox, QComboBox,
     QListWidget, QListWidgetItem, QScrollBar, QMessageBox
 )
 from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
-from enum import Enum
 
 from controller.ip_tables_controller import (
     viewRules, changeChainPolicy, addRule, removeRule

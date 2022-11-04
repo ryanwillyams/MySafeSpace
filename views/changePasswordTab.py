@@ -1,8 +1,8 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget, QTabWidget, QFormLayout, QGridLayout, QVBoxLayout, QHBoxLayout,
-    QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
-    QListWidget, QListWidgetItem, QScrollBar, QMessageBox
+    QWidget,  QVBoxLayout, QLabel, 
+    QPushButton, QLineEdit, QListWidget, 
+    QListWidgetItem
 )
 from PyQt6.QtCore import Qt
 
