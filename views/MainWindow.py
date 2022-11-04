@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget
+from PyQt6.QtWidgets import QMainWindow, QTabWidget
 
 from views.ResourcesPage import ResourcesPage
 from views.HardenPage import HardenMainPage
