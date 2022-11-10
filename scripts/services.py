@@ -93,3 +93,9 @@ def disableService(service):
     # Add to changelog
     addToChangelog(
         "Service {} disabled from running on boot up.".format(service))
+
+def whiteList():
+    pass
+
+def blackList():
+    pass
