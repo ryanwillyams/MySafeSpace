@@ -3,6 +3,11 @@ import os
 import subprocess
 from services.cleaner import clean
 
+# Run SystemCare
+def runSystemCare():
+    update()
+    junkFiles()
+
 # Update software and drivers. Clean unneeded packages
 def update():
     cmd = "sudo apt update -y && sudo apt full-upgrade -y"
