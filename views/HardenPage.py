@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import (
     QListWidget, QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap, QFont
 
 from views.passwordReqTab import PasswordReqTab
 from views.changePasswordTab import ChangePasswordTab
@@ -59,15 +60,53 @@ class UIFront(QWidget):
         preset_layout = QHBoxLayout()
         btn_layout = QHBoxLayout()
 
-        # Define preset layout
+        # Define high preset layout
         preset_high = QWidget()
         preset_high.setMaximumSize(200, 300)
         preset_high.setStyleSheet("background-color: #353535")
 
+        ## Label
+        label_high = QLabel("High Security")
+        label_high.setFont(QFont('Exo 2', 20))
+        label_high.resize(200, 25)
+
+        ## Image
+        pic_preset_high = QLabel()
+        pixmap = QPixmap('images/highPreset.png')
+        pixmap_high = pixmap.scaledToWidth(180)
+        pic_preset_high.setPixmap(pixmap_high)
+
+        ## Layout
+        high_layout = QVBoxLayout()
+        high_layout.addWidget(label_high)
+        high_layout.addWidget(pic_preset_high)
+        high_layout.addStretch()
+        preset_high.setLayout(high_layout)
+
+        # Define medium preset layout
         preset_med = QWidget()
         preset_med.setMaximumSize(200, 300)
         preset_med.setStyleSheet("background-color: #353535")
 
+        ## Label
+        label_med = QLabel("Med Security")
+        label_med.setFont(QFont('Exo 2', 20))
+        label_med.resize(200, 25)
+
+        ## Image
+        pic_preset_med = QLabel()
+        pixmap = QPixmap('images/medPreset.png')
+        pixmap_med = pixmap.scaledToWidth(180)
+        pic_preset_med.setPixmap(pixmap_med)
+
+        ## Layout
+        med_layout = QVBoxLayout()
+        med_layout.addWidget(label_med)
+        med_layout.addWidget(pic_preset_med)
+        med_layout.addStretch()
+        preset_med.setLayout(med_layout)
+
+        # Define low preset layout
         preset_low = QWidget()
         preset_low.setMaximumSize(200, 300)
         preset_low.setStyleSheet("background-color: #353535")
@@ -75,6 +114,24 @@ class UIFront(QWidget):
         preset_layout.addWidget(preset_high)
         preset_layout.addWidget(preset_med)
         preset_layout.addWidget(preset_low)
+
+        ## Label
+        label_low = QLabel("low Security")
+        label_low.setFont(QFont('Exo 2', 20))
+        label_low.resize(200, 25)
+
+        ## Image
+        pic_preset_low = QLabel()
+        pixmap = QPixmap('images/lowPreset.png')
+        pixmap_low = pixmap.scaledToWidth(180)
+        pic_preset_low.setPixmap(pixmap_low)
+
+        ## Layout
+        low_layout = QVBoxLayout()
+        low_layout.addWidget(label_low)
+        low_layout.addWidget(pic_preset_low)
+        low_layout.addStretch()
+        preset_low.setLayout(low_layout)
 
         # Define btn layout
         self.btn_customize = QPushButton("Customize")
