@@ -11,6 +11,7 @@ from views.changePasswordTab import ChangePasswordTab
 from views.changeSudoers import ChangeSudoers
 from views.iptablesTab import IPTables
 from views.ServicesTab import DisableServices
+from scripts.presets import (lowPreset, medPreset, highPreset)
 
 
 class HardenMainPage(QWidget):
@@ -27,6 +28,10 @@ class HardenMainPage(QWidget):
         self.uiFront.btn_logs.clicked.connect(self.logView)
         self.uiCustomize.btn_back.clicked.connect(self.frontView)
         self.uiLogs.btn_back.clicked.connect(self.frontView)
+
+        self.uiFront.btn_high.clicked.connect(self.uiCustomize.refreshCustomPage)
+        self.uiFront.btn_med.clicked.connect(self.uiCustomize.refreshCustomPage)
+        self.uiFront.btn_low.clicked.connect(self.uiCustomize.refreshCustomPage)
 
         self.layout.addWidget(self.uiFront)
         self.layout.addWidget(self.uiCustomize)
@@ -76,11 +81,17 @@ class UIFront(QWidget):
         pixmap_high = pixmap.scaledToWidth(180)
         pic_preset_high.setPixmap(pixmap_high)
 
+        ## Button
+        self.btn_high = QPushButton("Apply")
+        self.btn_high.setMaximumHeight(25)
+        self.btn_high.clicked.connect(highPreset)
+
         ## Layout
         high_layout = QVBoxLayout()
         high_layout.addWidget(label_high)
         high_layout.addWidget(pic_preset_high)
         high_layout.addStretch()
+        high_layout.addWidget(self.btn_high)
         preset_high.setLayout(high_layout)
 
         # Define medium preset layout
@@ -99,11 +110,17 @@ class UIFront(QWidget):
         pixmap_med = pixmap.scaledToWidth(180)
         pic_preset_med.setPixmap(pixmap_med)
 
+        ## Button
+        self.btn_med = QPushButton("Apply")
+        self.btn_med.setMaximumHeight(25)
+        self.btn_med.clicked.connect(medPreset)
+
         ## Layout
         med_layout = QVBoxLayout()
         med_layout.addWidget(label_med)
         med_layout.addWidget(pic_preset_med)
         med_layout.addStretch()
+        med_layout.addWidget(self.btn_med)
         preset_med.setLayout(med_layout)
 
         # Define low preset layout
@@ -126,11 +143,17 @@ class UIFront(QWidget):
         pixmap_low = pixmap.scaledToWidth(180)
         pic_preset_low.setPixmap(pixmap_low)
 
+        ## Button
+        self.btn_low = QPushButton("Apply")
+        self.btn_low.setMaximumHeight(25)
+        self.btn_low.clicked.connect(lowPreset)
+
         ## Layout
         low_layout = QVBoxLayout()
         low_layout.addWidget(label_low)
         low_layout.addWidget(pic_preset_low)
         low_layout.addStretch()
+        low_layout.addWidget(self.btn_low)
         preset_low.setLayout(low_layout)
 
         # Define btn layout
@@ -168,8 +191,8 @@ class UICustomize(QWidget):
 
 
         # Scrollbar
-        list_widget = QListWidget()
-        list_widget.setMaximumWidth(180)
+        self.list_widget = QListWidget()
+        self.list_widget.setMaximumWidth(180)
 
         # Scrollbar List
         list_passReqTab = QListWidgetItem("Password Requirements")
@@ -178,12 +201,12 @@ class UICustomize(QWidget):
         list_disableServices = QListWidgetItem("Services")
         list_iptables = QListWidgetItem("IPTables")
 
-        list_widget.addItem(list_passReqTab)
-        list_widget.addItem(list_changePassTab)
-        list_widget.addItem(list_changeSudoers)
-        list_widget.addItem(list_disableServices)
-        list_widget.addItem(list_iptables)
-        list_widget.itemClicked.connect(self.change_tab)
+        self.list_widget.addItem(list_passReqTab)
+        self.list_widget.addItem(list_changePassTab)
+        self.list_widget.addItem(list_changeSudoers)
+        self.list_widget.addItem(list_disableServices)
+        self.list_widget.addItem(list_iptables)
+        self.list_widget.itemClicked.connect(self.change_tab)
 
         # Create list widgets
         self.passReqTab = PasswordReqTab()
@@ -198,8 +221,8 @@ class UICustomize(QWidget):
 
         # Scrollbar formatting
         scroll_bar = QScrollBar(self)
-        list_widget.setVerticalScrollBar(scroll_bar)
-        self.bottom_layout.addWidget(list_widget)
+        self.list_widget.setVerticalScrollBar(scroll_bar)
+        self.bottom_layout.addWidget(self.list_widget)
         self.bottom_layout.addWidget(self.tabs[0])
         self.bottom_layout.addWidget(self.tabs[1])
         self.bottom_layout.addWidget(self.tabs[2])
@@ -241,6 +264,41 @@ class UICustomize(QWidget):
                 self.tabs[self.current_tab].hide()
                 self.iptables.show()
                 self.current_tab = 4
+
+    # Refreshes custom page
+    def refreshCustomPage(self):
+        self.passReqTab.close()
+        self.changePassTab.close()
+        self.changeSudoers.close()
+        self.disableServices.close()
+        self.iptables.close()
+
+        self.passReqTab = PasswordReqTab()
+        self.changePassTab = ChangePasswordTab()
+        self.changeSudoers = ChangeSudoers()
+        self.disableServices = DisableServices()
+        self.iptables = IPTables()
+
+        self.tabs = [self.passReqTab, self.changePassTab, self.changeSudoers,
+                self.disableServices, self.iptables]
+        self.current_tab = 0
+
+        # Scrollbar formatting
+        scroll_bar = QScrollBar(self)
+        self.list_widget.setVerticalScrollBar(scroll_bar)
+        self.bottom_layout.addWidget(self.list_widget)
+        self.bottom_layout.addWidget(self.tabs[0])
+        self.bottom_layout.addWidget(self.tabs[1])
+        self.bottom_layout.addWidget(self.tabs[2])
+        self.bottom_layout.addWidget(self.tabs[3])
+        self.bottom_layout.addWidget(self.tabs[4])
+
+        # Hide all widgets besides first
+        self.changePassTab.hide()
+        self.changeSudoers.hide()
+        self.disableServices.hide()
+        self.iptables.hide()
+        pass
 
 class UILogs(QWidget):
     def __init__(self):
