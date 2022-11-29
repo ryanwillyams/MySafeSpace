@@ -87,17 +87,17 @@ class ServicesTreeView(QTreeView):
         # If statement just pseudo 'updates' service. Would prefer
         # an actually reading of service status.
         if action == start_act:
-            if (startService(service_name)):
-                wait()
-                is_active = getActiveStatus(service_name)
-                self.updateServiceItem(self.currentIndex().row(), 1, is_active[0])
-                self.updateServiceItem(self.currentIndex().row(), 2, is_active[1])
+            startService(service_name)
+            wait()
+            is_active = getActiveStatus(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 1, is_active[0])
+            self.updateServiceItem(self.currentIndex().row(), 2, is_active[1])
         elif action == stop_act:
-            if (stopService(service_name)):
-                wait()
-                is_active = getActiveStatus(service_name)
-                self.updateServiceItem(self.currentIndex().row(), 1, is_active[0])
-                self.updateServiceItem(self.currentIndex().row(), 2, is_active[1])
+            stopService(service_name)
+            wait()
+            is_active = getActiveStatus(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 1, is_active[0])
+            self.updateServiceItem(self.currentIndex().row(), 2, is_active[1])
         elif action == enable_act:
             enableService(service_name)
             wait()
