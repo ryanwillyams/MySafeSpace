@@ -8,7 +8,7 @@ from PyQt6.QtCore import Qt
 
 from scripts.functions import listUsers, list_sudoers, list_nonsudoers
 from scripts.change_passwds import passwdChange
-
+import controller.controller as c
 
 class ChangePasswordTab(QWidget):
     def __init__(self):
@@ -54,4 +54,6 @@ class ChangePasswordTab(QWidget):
             if self.user_list_display.item(index).checkState() == Qt.CheckState.Checked:
                 checkedUsers.append(self.user_list_display.item(index).text())
 
-        passwdChange(self.newPasswd.text(), checkedUsers)
+        # passwdChange(self.newPasswd.text(), checkedUsers)
+        c.changePass(self.newPasswd.text(), checkedUsers)
+
