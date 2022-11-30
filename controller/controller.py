@@ -2,9 +2,9 @@ import scripts as sc
 import services as sv
 from enum import Enum
 
+#enum for automaticbackup
 B_MODE = Enum('Backup_Modes', 'MANUAL LOCAL REMOTE')
 
-# class Scripts:
 # changePass(pword, uList) 
 #   pword - str representing password to replace current
 #   uList - list of users to apply change to
@@ -29,7 +29,7 @@ def changePass(pword: str, uList: list) -> None:
 #   maxdays     - int representing max days before changing password
 #   mindays     - int represeting min days before changing password
 #   warning     - int representing num of days before recieving notification
-#   minlen      - int representing min passord length
+#   minlen      - int representing min password length
 #   numPassMem  - int representing number of previous passwords to remember
 #   upper       - bool to set upper case requirement
 #   lower       - bool to set lower case requirement
@@ -52,6 +52,7 @@ def passwordRequirements(maxdays: int, mindays: int, warning: int
         print('ControllerException: passwordRequirments()')
 
     pass
+
 # changeSudoers(uList)
 #   uList - list representing list of user(s) to add/remove from sudo privilages
 #   
@@ -68,14 +69,14 @@ def changeSudoers(uList: list, addFlag: bool) -> None:
 
     pass
 
-#
+# services()
 # 
 # 
-#
+#   description - switch controller to manage services. to use send 
 def services() -> None:
-    pass
 
-# class Services:
+
+    pass
 
 # getUpdates() -> None
 # 
@@ -111,4 +112,10 @@ def automaticBackups(option: B_MODE, intervalDays: int) -> str:
     except Exception:
         print(Exception)
 
+    pass
+
+# systemCare()
+# wip
+#
+def systemCare():
     pass
