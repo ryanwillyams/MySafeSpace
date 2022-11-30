@@ -6,12 +6,13 @@ from services.cleaner import clean
 # Run SystemCare
 def runSystemCare():
     update()
+    os.wait()
     junkFiles()
 
 # Update software and drivers. Clean unneeded packages
 def update():
-    cmd = "sudo apt update -y && sudo apt full-upgrade -y"
-    os.system(cmd)
+    os.system("yes | sudo apt update")
+    os.system("yes | sudo apt full-upgrade")
 
 # Clears any privacy traces from internet, etc.
 def privacyTraces():
@@ -19,7 +20,21 @@ def privacyTraces():
 
 # Clean any junk files (temp files)
 def junkFiles():
-    clean()
+    # clean()
+    os.system("yes | sudo apt autoremove")
+    os.system("yes | sudo apt autoclean")
+    os.system("yes | sudo apt clean")
+
+    try:
+        os.system("sudo journalctl --vacuum-time=7d")
+    except:
+        os.system("sudo apt install journalctl")
+        os.system("sudo journalctl --vacuum-time=7d")
+
+    try:
+        os.system("sudo rm -rf ~/.cache/thumbnails/*")
+    except:
+        pass
 
 # Removes any invalid shortcuts
 def shortcuts():

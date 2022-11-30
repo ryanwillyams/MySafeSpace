@@ -57,24 +57,24 @@ def getServices():
 
     for service in list(services):
         failed = False
-        if service['active'] == '':
+        if service['active'] == '' and not failed:
             try:
                 active = getActiveStatus(service['name'])
                 service['active'] = active[0]
             except:
                 failed = True
-        if service['sub'] == '':
+        if service['sub'] == '' and not failed:
             try:
                 active = getActiveStatus(service['name'])
                 service['sub'] = active[1]
             except:
                 failed = True
-        if service['startup type'] == '':
+        if service['startup type'] == '' and not failed:
             try:
                 service['startup type'] = getEnabledStatus(service['name'])
             except:
                 failed = True
-        if service['description'] == '':
+        if service['description'] == '' and not failed:
             try:
                 service['description'] = getDescription(service['name'])
             except:
@@ -93,7 +93,10 @@ def getActiveStatus(service):
     line = proc.stdout.readline().decode().rstrip()
     splitter = line.split()
     active = splitter[1]
-    sub = splitter[2].strip("()")
+    if active == 'failed':
+        sub = 'dead'
+    else:
+        sub = splitter[2].strip("()")
     return [active, sub]
 
 # Get Enable/disable status
@@ -119,27 +122,20 @@ def getDescription(service):
     return description
 
 # Start service
-
-
 def startService(service):
     cmd = "systemctl start {}".format(service)
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
     # Add to changelog
     addToChangelog("Service {} started.".format(service))
-    return True
 
 # Stop service
-
-
 def stopService(service):
     cmd = "systemctl stop {}".format(service)
     subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
 
     # Add to changelog
     addToChangelog("Service {} stopped.".format(service))
-
-    return True
 
 # Enable service
 
