@@ -6,7 +6,6 @@ from services.cleaner import clean
 # Run SystemCare
 def runSystemCare():
     update()
-    os.wait()
     junkFiles()
 
 # Update software and drivers. Clean unneeded packages
