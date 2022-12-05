@@ -65,65 +65,91 @@ class UIFront(QWidget):
         preset_layout = QHBoxLayout()
         btn_layout = QHBoxLayout()
 
-        # Define high preset layout
+        # Create help icon
+        pixmap = QPixmap('images/helpIcon.png')
+        pixmap_info_icon = pixmap.scaledToWidth(16)
+
+        # HIGH: Define preset layout
         preset_high = QWidget()
         preset_high.setMaximumSize(200, 300)
         preset_high.setStyleSheet("background-color: #353535")
 
-        ## Label
+        # HIGH: Label
         label_high = QLabel("High Security")
         label_high.setFont(QFont('Exo 2', 20))
         label_high.resize(200, 25)
 
-        ## Image
+        # HIGH: Image
         pic_preset_high = QLabel()
         pixmap = QPixmap('images/highPreset.png')
         pixmap_high = pixmap.scaledToWidth(180)
         pic_preset_high.setPixmap(pixmap_high)
 
-        ## Button
+        # HIGH: Button
         self.btn_high = QPushButton("Apply")
         self.btn_high.setMaximumHeight(25)
         self.btn_high.clicked.connect(highPreset)
 
-        ## Layout
+        # HIGH: Tooltip
+        info_high = QLabel()
+        info_high.setPixmap(pixmap_info_icon)
+        info_high.setAlignment(Qt.AlignmentFlag.AlignRight)
+        info_high.setToolTip("Changes password complexity requirements\n"
+                            "Check for updates and clean junk files\n"
+                            "Disable services: Printer, Avahi server,\n"
+                            "NFS, FTP, Samba, NIS, HTTP Proxy, DHCP,\n"
+                            "DNS, Apache2, IMAP, Rsync, Bluetooth")
+
+        # HIGH: Layout
         high_layout = QVBoxLayout()
         high_layout.addWidget(label_high)
         high_layout.addWidget(pic_preset_high)
         high_layout.addStretch()
+        high_layout.addWidget(info_high)
         high_layout.addWidget(self.btn_high)
         preset_high.setLayout(high_layout)
 
-        # Define medium preset layout
+        # MEDIUM: Define medium preset layout
         preset_med = QWidget()
         preset_med.setMaximumSize(200, 300)
         preset_med.setStyleSheet("background-color: #353535")
 
-        ## Label
+        # MEDIUM: Label
         label_med = QLabel("Med Security")
         label_med.setFont(QFont('Exo 2', 20))
         label_med.resize(200, 25)
 
-        ## Image
+        # MEDIUM: Image
         pic_preset_med = QLabel()
         pixmap = QPixmap('images/medPreset.png')
         pixmap_med = pixmap.scaledToWidth(180)
         pic_preset_med.setPixmap(pixmap_med)
 
-        ## Button
+        # MEDIUM: Button
         self.btn_med = QPushButton("Apply")
         self.btn_med.setMaximumHeight(25)
         self.btn_med.clicked.connect(medPreset)
 
-        ## Layout
+        # MEDIUM: Tooltip
+        info_med = QLabel()
+        info_med.setPixmap(pixmap_info_icon)
+        info_med.setAlignment(Qt.AlignmentFlag.AlignRight)
+        info_med.setToolTip("Changes password complexity requirements\n"
+                            "Check for updates and clean junk files\n"
+                            "Disable services: Printer, Avahi server,\n"
+                            "NFS, FTP, Samba, NIS, HTTP Proxy, IMAP\n"
+                            "Rsync, Bluetooth")
+
+        # MEDIUM: Layout
         med_layout = QVBoxLayout()
         med_layout.addWidget(label_med)
         med_layout.addWidget(pic_preset_med)
         med_layout.addStretch()
+        med_layout.addWidget(info_med)
         med_layout.addWidget(self.btn_med)
         preset_med.setLayout(med_layout)
 
-        # Define low preset layout
+        # LOW: Define low preset layout
         preset_low = QWidget()
         preset_low.setMaximumSize(200, 300)
         preset_low.setStyleSheet("background-color: #353535")
@@ -132,27 +158,38 @@ class UIFront(QWidget):
         preset_layout.addWidget(preset_med)
         preset_layout.addWidget(preset_low)
 
-        ## Label
+        # LOW: Label
         label_low = QLabel("low Security")
         label_low.setFont(QFont('Exo 2', 20))
         label_low.resize(200, 25)
 
-        ## Image
+        # LOW: Image
         pic_preset_low = QLabel()
         pixmap = QPixmap('images/lowPreset.png')
         pixmap_low = pixmap.scaledToWidth(180)
         pic_preset_low.setPixmap(pixmap_low)
 
-        ## Button
+        # LOW: Button
         self.btn_low = QPushButton("Apply")
         self.btn_low.setMaximumHeight(25)
         self.btn_low.clicked.connect(lowPreset)
 
-        ## Layout
+        # LOW: Tooltip
+        info_low = QLabel()
+        info_low.setPixmap(pixmap_info_icon)
+        info_low.setAlignment(Qt.AlignmentFlag.AlignRight)
+        info_low.setToolTip("Changes password complexity requirements\n"
+                            "Check for updates and clean junk files\n"
+                            "Disable services: Avahi server, NFS, FTP,\n"
+                            "Samba, NIS, HTTP Proxy, DHCP, Apache2,\n"
+                            "IMAP, Rsync")
+
+        # LOW: Layout
         low_layout = QVBoxLayout()
         low_layout.addWidget(label_low)
         low_layout.addWidget(pic_preset_low)
         low_layout.addStretch()
+        low_layout.addWidget(info_low)
         low_layout.addWidget(self.btn_low)
         preset_low.setLayout(low_layout)
 
