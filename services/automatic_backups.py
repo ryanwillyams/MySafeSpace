@@ -43,18 +43,19 @@ def info():
 def install_timeshift():
     # Install Timeshift on the system
     try: 
-        subprocess.run(['sudo', 'apt', 'install', 'timeshift'])
-    except: 
+        subprocess.run(['sudo', 'apt', 'install', 'timeshift'], check = True)
+    except subprocess.CalledProcessError: 
         # NOTE: This is only required up to Ubuntu 18.04 LTS, try/catch will add ppa if required
         subprocess.run(['sudo', 'apt', 'update'])
         subprocess.run(['sudo' 'add-apt-repository' '-y' 'ppa:teejee2008/ppa'])
 
 def local_backup():
     # Try Launch Timeshift, if fail install packages
-    try:
-        subprocess.run(['sudo', 'timeshift-gtk'])
-    except:
-        install_timeshift()
+    while True:
+        try:
+            subprocess.run(['sudo', 'timeshift-gtk'], check = True)
+            break
+        except subprocess.CalledProcessError:
+            install_timeshift()
     # Timeshift writes a lot of output to the terminal, clear this out
-    subprocess.run(['clear'])
-
+    # subprocess.run(['clear'])
