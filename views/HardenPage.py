@@ -12,6 +12,8 @@ from views.changeSudoers import ChangeSudoers
 from views.iptablesTab import IPTables
 from views.ServicesTab import DisableServices
 from scripts.presets import (lowPreset, medPreset, highPreset)
+from services.systemCare import runSystemCare
+from services.automatic_backups import local_backup
 
 
 class HardenMainPage(QWidget):
@@ -194,12 +196,22 @@ class UIFront(QWidget):
         preset_low.setLayout(low_layout)
 
         # Define btn layout
+        btn_systemcare = QPushButton("SystemCare")
+        btn_systemcare.setMaximumSize(100, 25)
+        btn_systemcare.clicked.connect(runSystemCare)
+
+        btn_auto_backup = QPushButton("Auto Backup")
+        btn_auto_backup.setMaximumSize(100, 25)
+        btn_auto_backup.clicked.connect(local_backup)
+
         self.btn_customize = QPushButton("Customize")
         self.btn_customize.setMaximumSize(100, 25)
 
         self.btn_logs = QPushButton("Logs")
         self.btn_logs.setMaximumSize(100, 25)
 
+        btn_layout.addWidget(btn_systemcare)
+        btn_layout.addWidget(btn_auto_backup)
         btn_layout.addWidget(self.btn_customize)
         btn_layout.addWidget(self.btn_logs)
 
