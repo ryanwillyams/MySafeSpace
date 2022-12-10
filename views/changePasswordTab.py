@@ -1,8 +1,8 @@
 from logging.handlers import QueueListener
 from PyQt6.QtWidgets import (
-    QWidget,  QVBoxLayout, QLabel, 
+    QWidget, QHBoxLayout, QVBoxLayout, QLabel, QMessageBox,
     QPushButton, QLineEdit, QListWidget, 
-    QListWidgetItem
+    QListWidgetItem, QFormLayout
 )
 from PyQt6.QtCore import Qt
 
@@ -16,7 +16,8 @@ class ChangePasswordTab(QWidget):
 
         # Layout
         main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
+        pass_layout = QFormLayout()
+        # second_pass_layout = QHBoxLayout()
 
         # Title
         title_card = QLabel("Choose Users to reset password")
@@ -25,18 +26,6 @@ class ChangePasswordTab(QWidget):
         # List all normal users on device
         self.user_list_display = QListWidget()
         main_layout.addWidget(self.user_list_display)
-
-        # Text box for new password
-        self.newPasswdLabel = QLabel("New password: ")
-        main_layout.addWidget(self.newPasswdLabel)
-        self.newPasswd = QLineEdit(self)
-        main_layout.addWidget(self.newPasswd)
-
-        # Submit buttom
-        self.submit_button = QPushButton(
-            "Submit", clicked=self.changeCheckedUsers)
-        main_layout.addWidget(self.submit_button)
-        self.setLayout(main_layout)
 
         # Retrieve list of users
         users_list = listUsers()
@@ -47,6 +36,34 @@ class ChangePasswordTab(QWidget):
             item.setCheckState(Qt.CheckState.Unchecked)
             self.user_list_display.addItem(item)
 
+        # Text box for new password
+        # self.newPasswdLabel = QLabel("New password: ")
+        # main_layout.addWidget(self.newPasswdLabel)
+        # self.newPasswd = QLineEdit(self)
+        # self.newPasswd.setEchoMode(QLineEdit.EchoMode.Password)
+        # main_layout.addWidget(self.newPasswd)
+
+        
+        # Form for new password
+        self.new_pass_textbox = QLineEdit(self)
+        self.new_pass_textbox.setEchoMode(QLineEdit.EchoMode.Password)
+        self.confirm_pass_textbox = QLineEdit(self)
+        self.confirm_pass_textbox.setEchoMode(QLineEdit.EchoMode.Password)
+
+        pass_layout.addRow(QLabel("New Password: "), self.new_pass_textbox)
+        pass_layout.addRow(QLabel("Confirm Password: "), self.confirm_pass_textbox)        
+
+        # Submit button
+        self.submit_button = QPushButton(
+            "Submit", clicked=self.changeCheckedUsers)
+
+        # Add sublayouts to main layout
+        main_layout.addLayout(pass_layout)
+        main_layout.addWidget(self.submit_button)
+
+        # Set windows main layout
+        self.setLayout(main_layout)
+
     # Function to change selected users
     def changeCheckedUsers(self):
         checkedUsers = []
@@ -55,5 +72,15 @@ class ChangePasswordTab(QWidget):
                 checkedUsers.append(self.user_list_display.item(index).text())
 
         # passwdChange(self.newPasswd.text(), checkedUsers)
-        c.changePass(self.newPasswd.text(), checkedUsers)
+        if self.new_pass_textbox.text() == self.confirm_pass_textbox.text():
+            c.changePass(self.confirm_pass_textbox.text(), checkedUsers)
+        else:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setWindowTitle("Error Invalid Password")
+            msg.setText("Passwords do not match. Try again.")
+            msg.exec()
+
+class PopDialog(QWidget):
+    pass
 
