@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
     QListWidget, QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
 from PyQt6.QtCore import Qt, QObject, QThread, pyqtSignal
-from PyQt6.QtGui import QPixmap, QFont
+from PyQt6.QtGui import QPixmap, QFont, QMovie
 
 from views.passwordReqTab import PasswordReqTab
 from views.changePasswordTab import ChangePasswordTab
@@ -30,10 +30,6 @@ class HardenMainPage(QWidget):
         self.uiFront.btn_logs.clicked.connect(self.logView)
         self.uiCustomize.btn_back.clicked.connect(self.frontView)
         self.uiLogs.btn_back.clicked.connect(self.frontView)
-
-        self.uiFront.btn_high.clicked.connect(self.uiCustomize.refreshCustomPage)
-        self.uiFront.btn_med.clicked.connect(self.uiCustomize.refreshCustomPage)
-        self.uiFront.btn_low.clicked.connect(self.uiCustomize.refreshCustomPage)
 
         self.layout.addWidget(self.uiFront)
         self.layout.addWidget(self.uiCustomize)
@@ -89,12 +85,47 @@ class SystemCareWorker(QObject):
         runSystemCare()
         self.finished.emit()
 
+class PresetPopDialog(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("Applying Preset")
+
+        outer_layout = QVBoxLayout()
+
+        self.title = QLabel('Applying Changes...')
+        self.title.setFont(QFont('Exo 2', 20))
+        self.loading = QLabel()
+        self.movie = QMovie('images/loading.gif')
+        self.loading.setMovie(self.movie)
+        self.movie.start()
+
+        outer_layout.addWidget(self.title)
+        outer_layout.addWidget(self.loading, 
+                alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(outer_layout)
+
 class SystemCarePopDialog(QWidget):
     def __init__(self):
         QWidget.__init__(self)
-        self.setWindowTitle("Running SystemCare")
+        self.setWindowTitle("SystemCare")
 
         outer_layout = QVBoxLayout()
+
+        self.title = QLabel('Running SystemCare...')
+        self.title.setFont(QFont('Exo 2', 20))
+        self.loading = QLabel()
+        self.movie = QMovie('images/loading.gif')
+        self.loading.setMovie(self.movie)
+        self.movie.start()
+
+        outer_layout.addWidget(self.title)
+        outer_layout.addWidget(self.loading, 
+                alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(outer_layout)
 
 
 class UIFront(QWidget):
@@ -130,7 +161,7 @@ class UIFront(QWidget):
         # HIGH: Button
         self.btn_high = QPushButton("Apply")
         self.btn_high.setMaximumHeight(25)
-        self.btn_high.clicked.connect(highPreset)
+        self.btn_high.clicked.connect(self.highPresetWorker)
 
         # HIGH: Tooltip
         info_high = QLabel()
@@ -170,7 +201,7 @@ class UIFront(QWidget):
         # MEDIUM: Button
         self.btn_med = QPushButton("Apply")
         self.btn_med.setMaximumHeight(25)
-        self.btn_med.clicked.connect(medPreset)
+        self.btn_med.clicked.connect(self.medPresetWorker)
 
         # MEDIUM: Tooltip
         info_med = QLabel()
@@ -214,7 +245,7 @@ class UIFront(QWidget):
         # LOW: Button
         self.btn_low = QPushButton("Apply")
         self.btn_low.setMaximumHeight(25)
-        self.btn_low.clicked.connect(lowPreset)
+        self.btn_low.clicked.connect(self.lowPresetWorker)
 
         # LOW: Tooltip
         info_low = QLabel()
@@ -262,43 +293,109 @@ class UIFront(QWidget):
         # Set main window layout
         self.setLayout(outer_layout)
 
-    def autoBackup(self):
-        self.thread = QThread()
-        self.worker = BackupWorker()
+    def highPresetWorker(self):
+        self.preset_popup = PresetPopDialog()
+        self.preset_popup.setFixedSize(400, 200)
+        self.preset_popup.show()
 
-        self.worker.moveToThread(self.thread)
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.thread.start()
+        self.hpreset_thread = QThread()
+        self.hpreset_worker = PresetWorker()
+
+        self.hpreset_worker.moveToThread(self.hpreset_thread)
+        self.hpreset_thread.started.connect(self.hpreset_worker.runHigh)
+        self.hpreset_worker.finished.connect(self.hpreset_thread.quit)
+        self.hpreset_worker.finished.connect(self.hpreset_worker.deleteLater)
+        self.hpreset_thread.finished.connect(self.hpreset_thread.deleteLater)
+        self.hpreset_thread.start()
+
+        self.btn_high.setEnabled(False)
+        self.btn_med.setEnabled(False)
+        self.btn_low.setEnabled(False)
+        self.lpreset_thread.finished.connect(self.presetFinished)
+
+    def medPresetWorker(self):
+        self.preset_popup = PresetPopDialog()
+        self.preset_popup.setFixedSize(400, 200)
+        self.preset_popup.show()
+
+        self.mpreset_thread = QThread()
+        self.mpreset_worker = PresetWorker()
+
+        self.mpreset_worker.moveToThread(self.mpreset_thread)
+        self.mpreset_thread.started.connect(self.mpreset_worker.runMed)
+        self.mpreset_worker.finished.connect(self.mpreset_thread.quit)
+        self.mpreset_worker.finished.connect(self.mpreset_worker.deleteLater)
+        self.mpreset_thread.finished.connect(self.mpreset_thread.deleteLater)
+        self.mpreset_thread.start()
+
+        self.btn_high.setEnabled(False)
+        self.btn_med.setEnabled(False)
+        self.btn_low.setEnabled(False)
+        self.mpreset_thread.finished.connect(self.presetFinished)
+
+    def lowPresetWorker(self):
+        self.preset_popup = PresetPopDialog()
+        self.preset_popup.setFixedSize(400, 200)
+        self.preset_popup.show()
+
+        self.lpreset_thread = QThread()
+        self.lpreset_worker = PresetWorker()
+
+        self.lpreset_worker.moveToThread(self.lpreset_thread)
+        self.lpreset_thread.started.connect(self.lpreset_worker.runLow)
+        self.lpreset_worker.finished.connect(self.lpreset_thread.quit)
+        self.lpreset_worker.finished.connect(self.lpreset_worker.deleteLater)
+        self.lpreset_thread.finished.connect(self.lpreset_thread.deleteLater)
+        self.lpreset_thread.start()
+
+        self.btn_high.setEnabled(False)
+        self.btn_med.setEnabled(False)
+        self.btn_low.setEnabled(False)
+        self.lpreset_thread.finished.connect(self.presetFinished)
+    
+    def presetFinished(self):
+        self.preset_popup.close()
+        self.btn_high.setEnabled(True)
+        self.btn_med.setEnabled(True)
+        self.btn_low.setEnabled(True)
+
+    def autoBackup(self):
+        self.auto_thread = QThread()
+        self.auto_worker = BackupWorker()
+
+        self.auto_worker.moveToThread(self.auto_thread)
+        self.auto_thread.started.connect(self.auto_worker.run)
+        self.auto_worker.finished.connect(self.auto_thread.quit)
+        self.auto_worker.finished.connect(self.auto_worker.deleteLater)
+        self.auto_thread.finished.connect(self.auto_thread.deleteLater)
+        self.auto_thread.start()
 
         self.btn_auto_backup.setEnabled(False)
-        self.thread.finished.connect(
+        self.auto_thread.finished.connect(
             lambda: self.btn_auto_backup.setEnabled(True)
         )
 
     def systemCare(self):
-        self.popup = SystemCarePopDialog()
-        self.popup.setFixedSize(300, 150)
-        self.popup.show()
+        self.syscare_popup = SystemCarePopDialog()
+        self.syscare_popup.setFixedSize(400, 200)
+        self.syscare_popup.show()
 
-        self.thread = QThread()
-        self.worker = SystemCareWorker()
+        self.syscare_thread = QThread()
+        self.syscare_worker = SystemCareWorker()
 
-        self.worker.moveToThread(self.thread)
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        self.thread.start()
+        self.syscare_worker.moveToThread(self.syscare_thread)
+        self.syscare_thread.started.connect(self.syscare_worker.run)
+        self.syscare_worker.finished.connect(self.syscare_thread.quit)
+        self.syscare_worker.finished.connect(self.syscare_worker.deleteLater)
+        self.syscare_thread.finished.connect(self.syscare_thread.deleteLater)
+        self.syscare_thread.start()
 
         self.btn_systemcare.setEnabled(False)
-        self.thread.finished.connect(
+        self.syscare_thread.finished.connect(
             lambda: self.btn_systemcare.setEnabled(True)
         )
-        self.thread.finished.connect(
-            lambda: self.popup.close()
+        self.syscare_thread.finished.connect(
+            lambda: self.syscare_popup.close()
         )
 
 class UICustomize(QWidget):
