@@ -74,12 +74,17 @@ class ChangePasswordTab(QWidget):
         # passwdChange(self.newPasswd.text(), checkedUsers)
         if self.new_pass_textbox.text() == self.confirm_pass_textbox.text():
             c.changePass(self.confirm_pass_textbox.text(), checkedUsers)
+            for index in range(self.user_list_display.count()):
+                self.user_list_display.item(index).setCheckState(Qt.CheckState.Unchecked)
         else:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Warning)
             msg.setWindowTitle("Error Invalid Password")
             msg.setText("Passwords do not match. Try again.")
             msg.exec()
+        
+        self.new_pass_textbox.clear()
+        self.confirm_pass_textbox.clear()
 
 class PopDialog(QWidget):
     pass
