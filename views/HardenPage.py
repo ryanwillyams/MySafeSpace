@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
     QListWidget, QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QObject, QThread, pyqtSignal
 from PyQt6.QtGui import QPixmap, QFont
 
 from views.passwordReqTab import PasswordReqTab
@@ -56,6 +56,46 @@ class HardenMainPage(QWidget):
         self.uiCustomize.hide()
         self.uiLogs.hide()
         self.uiFront.show()
+
+class PresetWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def runHigh(self):
+        highPreset()
+        self.finished.emit()
+    
+    def runMed(self):
+        medPreset()
+        self.finished.emit()
+
+    def runLow(self):
+        lowPreset()
+        self.finished.emit()
+
+class BackupWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        local_backup()
+        self.finished.emit()
+
+class SystemCareWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        runSystemCare()
+        self.finished.emit()
+
+class SystemCarePopDialog(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("Running SystemCare")
+
+        outer_layout = QVBoxLayout()
+
 
 class UIFront(QWidget):
     def __init__(self):
@@ -196,13 +236,13 @@ class UIFront(QWidget):
         preset_low.setLayout(low_layout)
 
         # Define btn layout
-        btn_systemcare = QPushButton("SystemCare")
-        btn_systemcare.setMaximumSize(100, 25)
-        btn_systemcare.clicked.connect(runSystemCare)
+        self.btn_systemcare = QPushButton("SystemCare")
+        self.btn_systemcare.setMaximumSize(100, 25)
+        self.btn_systemcare.clicked.connect(self.systemCare)
 
-        btn_auto_backup = QPushButton("Auto Backup")
-        btn_auto_backup.setMaximumSize(100, 25)
-        btn_auto_backup.clicked.connect(local_backup)
+        self.btn_auto_backup = QPushButton("Auto Backup")
+        self.btn_auto_backup.setMaximumSize(100, 25)
+        self.btn_auto_backup.clicked.connect(self.autoBackup)
 
         self.btn_customize = QPushButton("Customize")
         self.btn_customize.setMaximumSize(100, 25)
@@ -210,8 +250,8 @@ class UIFront(QWidget):
         self.btn_logs = QPushButton("Logs")
         self.btn_logs.setMaximumSize(100, 25)
 
-        btn_layout.addWidget(btn_systemcare)
-        btn_layout.addWidget(btn_auto_backup)
+        btn_layout.addWidget(self.btn_systemcare)
+        btn_layout.addWidget(self.btn_auto_backup)
         btn_layout.addWidget(self.btn_customize)
         btn_layout.addWidget(self.btn_logs)
 
@@ -221,6 +261,45 @@ class UIFront(QWidget):
 
         # Set main window layout
         self.setLayout(outer_layout)
+
+    def autoBackup(self):
+        self.thread = QThread()
+        self.worker = BackupWorker()
+
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()
+
+        self.btn_auto_backup.setEnabled(False)
+        self.thread.finished.connect(
+            lambda: self.btn_auto_backup.setEnabled(True)
+        )
+
+    def systemCare(self):
+        self.popup = SystemCarePopDialog()
+        self.popup.setFixedSize(300, 150)
+        self.popup.show()
+
+        self.thread = QThread()
+        self.worker = SystemCareWorker()
+
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.thread.start()
+
+        self.btn_systemcare.setEnabled(False)
+        self.thread.finished.connect(
+            lambda: self.btn_systemcare.setEnabled(True)
+        )
+        self.thread.finished.connect(
+            lambda: self.popup.close()
+        )
 
 class UICustomize(QWidget):
     def __init__(self):
