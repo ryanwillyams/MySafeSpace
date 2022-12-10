@@ -1,5 +1,5 @@
 from os import wait
-from scripts.iptablesList import applyRules
+from scripts.iptables import applyRules
 from scripts.passwdReq import (writeToCommon_Password, changeMaxDays,
                               changeMinDays, changeWarnDays)
 from scripts.services import (startService, stopService, 
