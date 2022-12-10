@@ -31,6 +31,10 @@ class HardenMainPage(QWidget):
         self.uiCustomize.btn_back.clicked.connect(self.frontView)
         self.uiLogs.btn_back.clicked.connect(self.frontView)
 
+        self.uiFront.btn_high.clicked.connect(lambda: self.PresetWorker('high'))
+        self.uiFront.btn_med.clicked.connect(lambda: self.PresetWorker('med'))
+        self.uiFront.btn_low.clicked.connect(lambda: self.PresetWorker('low'))
+        
         self.layout.addWidget(self.uiFront)
         self.layout.addWidget(self.uiCustomize)
         self.layout.addWidget(self.uiLogs)
@@ -52,6 +56,40 @@ class HardenMainPage(QWidget):
         self.uiCustomize.hide()
         self.uiLogs.hide()
         self.uiFront.show()
+
+    def PresetWorker(self, preset):
+        self.preset_popup = PresetPopDialog()
+        self.preset_popup.setFixedSize(400, 200)
+        self.preset_popup.show()
+
+        self.preset_thread = QThread()
+        self.preset_worker = PresetWorker()
+
+        self.preset_worker.moveToThread(self.preset_thread)
+
+        if preset == 'high':
+            self.preset_thread.started.connect(self.preset_worker.runHigh)
+        elif preset == 'med':
+            self.preset_thread.started.connect(self.preset_worker.runMed)
+        elif preset == 'low':
+            self.preset_thread.started.connect(self.preset_worker.runLow)
+        
+        self.preset_worker.finished.connect(self.preset_thread.quit)
+        self.preset_worker.finished.connect(self.preset_worker.deleteLater)
+        self.preset_thread.finished.connect(self.preset_thread.deleteLater)
+        self.preset_thread.start()
+
+        self.uiFront.btn_high.setEnabled(False)
+        self.uiFront.btn_med.setEnabled(False)
+        self.uiFront.btn_low.setEnabled(False)
+        self.preset_thread.finished.connect(self.presetFinished)
+    
+    def presetFinished(self):
+        self.preset_popup.close()
+        self.uiCustomize.refreshCustomPage()
+        self.uiFront.btn_high.setEnabled(True)
+        self.uiFront.btn_med.setEnabled(True)
+        self.uiFront.btn_low.setEnabled(True)
 
 class PresetWorker(QObject):
     finished = pyqtSignal()
@@ -161,7 +199,7 @@ class UIFront(QWidget):
         # HIGH: Button
         self.btn_high = QPushButton("Apply")
         self.btn_high.setMaximumHeight(25)
-        self.btn_high.clicked.connect(self.highPresetWorker)
+        # self.btn_high.clicked.connect(lambda: self.PresetWorker('high'))
 
         # HIGH: Tooltip
         info_high = QLabel()
@@ -201,7 +239,7 @@ class UIFront(QWidget):
         # MEDIUM: Button
         self.btn_med = QPushButton("Apply")
         self.btn_med.setMaximumHeight(25)
-        self.btn_med.clicked.connect(self.medPresetWorker)
+        # self.btn_med.clicked.connect(lambda: self.PresetWorker('med'))
 
         # MEDIUM: Tooltip
         info_med = QLabel()
@@ -245,7 +283,7 @@ class UIFront(QWidget):
         # LOW: Button
         self.btn_low = QPushButton("Apply")
         self.btn_low.setMaximumHeight(25)
-        self.btn_low.clicked.connect(self.lowPresetWorker)
+        # self.btn_low.clicked.connect(lambda: self.PresetWorker('low'))
 
         # LOW: Tooltip
         info_low = QLabel()
@@ -293,71 +331,38 @@ class UIFront(QWidget):
         # Set main window layout
         self.setLayout(outer_layout)
 
-    def highPresetWorker(self):
-        self.preset_popup = PresetPopDialog()
-        self.preset_popup.setFixedSize(400, 200)
-        self.preset_popup.show()
+    # def PresetWorker(self, preset):
+    #     self.preset_popup = PresetPopDialog()
+    #     self.preset_popup.setFixedSize(400, 200)
+    #     self.preset_popup.show()
 
-        self.hpreset_thread = QThread()
-        self.hpreset_worker = PresetWorker()
+    #     self.preset_thread = QThread()
+    #     self.preset_worker = PresetWorker()
 
-        self.hpreset_worker.moveToThread(self.hpreset_thread)
-        self.hpreset_thread.started.connect(self.hpreset_worker.runHigh)
-        self.hpreset_worker.finished.connect(self.hpreset_thread.quit)
-        self.hpreset_worker.finished.connect(self.hpreset_worker.deleteLater)
-        self.hpreset_thread.finished.connect(self.hpreset_thread.deleteLater)
-        self.hpreset_thread.start()
+    #     self.preset_worker.moveToThread(self.preset_thread)
 
-        self.btn_high.setEnabled(False)
-        self.btn_med.setEnabled(False)
-        self.btn_low.setEnabled(False)
-        self.lpreset_thread.finished.connect(self.presetFinished)
+    #     if preset == 'high':
+    #         self.preset_thread.started.connect(self.preset_worker.runHigh)
+    #     elif preset == 'med':
+    #         self.preset_thread.started.connect(self.preset_worker.runMed)
+    #     elif preset == 'low':
+    #         self.preset_thread.started.connect(self.preset_worker.runLow)
+        
+    #     self.preset_worker.finished.connect(self.preset_thread.quit)
+    #     self.preset_worker.finished.connect(self.preset_worker.deleteLater)
+    #     self.preset_thread.finished.connect(self.preset_thread.deleteLater)
+    #     self.preset_thread.start()
 
-    def medPresetWorker(self):
-        self.preset_popup = PresetPopDialog()
-        self.preset_popup.setFixedSize(400, 200)
-        self.preset_popup.show()
-
-        self.mpreset_thread = QThread()
-        self.mpreset_worker = PresetWorker()
-
-        self.mpreset_worker.moveToThread(self.mpreset_thread)
-        self.mpreset_thread.started.connect(self.mpreset_worker.runMed)
-        self.mpreset_worker.finished.connect(self.mpreset_thread.quit)
-        self.mpreset_worker.finished.connect(self.mpreset_worker.deleteLater)
-        self.mpreset_thread.finished.connect(self.mpreset_thread.deleteLater)
-        self.mpreset_thread.start()
-
-        self.btn_high.setEnabled(False)
-        self.btn_med.setEnabled(False)
-        self.btn_low.setEnabled(False)
-        self.mpreset_thread.finished.connect(self.presetFinished)
-
-    def lowPresetWorker(self):
-        self.preset_popup = PresetPopDialog()
-        self.preset_popup.setFixedSize(400, 200)
-        self.preset_popup.show()
-
-        self.lpreset_thread = QThread()
-        self.lpreset_worker = PresetWorker()
-
-        self.lpreset_worker.moveToThread(self.lpreset_thread)
-        self.lpreset_thread.started.connect(self.lpreset_worker.runLow)
-        self.lpreset_worker.finished.connect(self.lpreset_thread.quit)
-        self.lpreset_worker.finished.connect(self.lpreset_worker.deleteLater)
-        self.lpreset_thread.finished.connect(self.lpreset_thread.deleteLater)
-        self.lpreset_thread.start()
-
-        self.btn_high.setEnabled(False)
-        self.btn_med.setEnabled(False)
-        self.btn_low.setEnabled(False)
-        self.lpreset_thread.finished.connect(self.presetFinished)
+    #     self.btn_high.setEnabled(False)
+    #     self.btn_med.setEnabled(False)
+    #     self.btn_low.setEnabled(False)
+    #     self.preset_thread.finished.connect(self.presetFinished)
     
-    def presetFinished(self):
-        self.preset_popup.close()
-        self.btn_high.setEnabled(True)
-        self.btn_med.setEnabled(True)
-        self.btn_low.setEnabled(True)
+    # def presetFinished(self):
+    #     self.preset_popup.close()
+    #     self.btn_high.setEnabled(True)
+    #     self.btn_med.setEnabled(True)
+    #     self.btn_low.setEnabled(True)
 
     def autoBackup(self):
         self.auto_thread = QThread()
