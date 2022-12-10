@@ -23,24 +23,30 @@ class HardenMainPage(QWidget):
         # Declare layout
         self.layout = QHBoxLayout()
 
+        # Define pages
         self.uiFront = UIFront()
         self.uiCustomize = UICustomize()
         self.uiLogs = UILogs()
+
+        # Define bottom button functions
         self.uiFront.btn_customize.clicked.connect(self.customizeView)
         self.uiFront.btn_logs.clicked.connect(self.logView)
         self.uiCustomize.btn_back.clicked.connect(self.frontView)
         self.uiLogs.btn_back.clicked.connect(self.frontView)
 
+        # Define Preset buttons
         self.uiFront.btn_high.clicked.connect(lambda: self.PresetWorker('high'))
         self.uiFront.btn_med.clicked.connect(lambda: self.PresetWorker('med'))
         self.uiFront.btn_low.clicked.connect(lambda: self.PresetWorker('low'))
         
+        # Add pages to layout
         self.layout.addWidget(self.uiFront)
         self.layout.addWidget(self.uiCustomize)
         self.layout.addWidget(self.uiLogs)
         self.uiCustomize.hide()
         self.uiLogs.hide()
 
+        # Set windows main layout
         self.setLayout(self.layout)
 
     def customizeView(self):
