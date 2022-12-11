@@ -160,7 +160,7 @@ def viewRules() -> list[str]:
         if not line:
             break
         rules.append(line.rstrip())
-
+    rules.append('')
     return rules
 
 # Adds rule to IPTables
@@ -391,7 +391,7 @@ def applyRules():
             "sudo iptables -A INPUT -m conntrack --ctstate INVALID -j DROP",
             "sudo iptables -A INPUT -s 203.0.113.51 -j DROP",
             "sudo iptables -A INPUT -s 203.0.113.51 -j REJECT",
-            "iptables -A INPUT -i eth0 -s 203.0.113.51 -j DROP",
+            "sudo iptables -A INPUT -i eth0 -s 203.0.113.51 -j DROP",
             "sudo iptables -A INPUT -p tcp --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
             "sudo iptables -A OUTPUT -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT",
             "sudo iptables -A INPUT -p tcp -s 203.0.113.0/24 --dport 22 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT",
