@@ -19,4 +19,4 @@ jobs:
     - name: Run tests
       if: always()
       run: |
-        python -m pytest --fail-fast
+        python -m pytest -x
