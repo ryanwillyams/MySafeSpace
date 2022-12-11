@@ -22,4 +22,4 @@ jobs:
     - name: Run tests
       if: always()
       run: |
-        python -m pytest -x
+        python -m pytest -x -v
