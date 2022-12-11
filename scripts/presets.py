@@ -1,5 +1,5 @@
 from os import wait
-from scripts.iptables import applyRules
+from scripts.iptables import applyRules, resetRules
 from scripts.passwdReq import (writeToCommon_Password, changeMaxDays,
                               changeMinDays, changeWarnDays)
 from scripts.services import (startService, stopService, 
@@ -22,7 +22,9 @@ def highPreset():
             disableService(service)
         except:
             pass
+    wait()
     # Implement IPTables rules
+    resetRules()
     applyRules()
     # run SystemCare
     runSystemCare()
@@ -49,7 +51,9 @@ def medPreset():
             startService(service)
         except:
             pass
+    wait()
     # Implement IPTables rules
+    resetRules()
     applyRules()
     # run SystemCare
     runSystemCare()
@@ -78,6 +82,7 @@ def lowPreset():
             pass
     wait()
     # Implement IPTables rules
+    resetRules()
     applyRules()
     # run SystemCare
     runSystemCare()
