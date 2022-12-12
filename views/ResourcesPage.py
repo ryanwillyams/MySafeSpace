@@ -48,7 +48,7 @@ class RWidget(QFrame):
     def __init__(self, img, hyperlink, title, descript):
         super(RWidget, self).__init__()
 
-        self.setFixedHeight(125)
+        self.setFixedHeight(150)
         self.setFixedWidth(915)
         self.setStyleSheet("background-color: #454545")
         
@@ -75,16 +75,18 @@ class RWidget(QFrame):
         description.setWordWrap(True)
 
         # Add labels to right layout
+        right_widget = QWidget()
         right_layout.addWidget(header)
         right_layout.addWidget(description)
+        right_widget.setLayout(right_layout)
 
         # Add widgets and sublayouts to main layout
-        outer_layout.addWidget(picture, alignment=Qt.AlignmentFlag.AlignJustify)
-        outer_layout.addLayout(right_layout)
+        outer_layout.addWidget(picture, alignment=Qt.AlignmentFlag.AlignLeading)
+        outer_layout.addWidget(right_widget, 10)
 
         # end = QLabel()
         # outer_layout.addWidget(end, alignment=Qt.AlignmentFlag.AlignRight)
-        outer_layout.addStretch()
+        # outer_layout.addStretch()
 
         # Set layout to main widget
         self.setLayout(outer_layout)
@@ -101,27 +103,29 @@ class NewsTab(QWidget):
         news_list = QWidget()
         
         news_outlets = [
-            RWidget('images/lowPreset.png',
-                'https://www.scmagazine.com/security-weekly',
-                'Security Weekly',
-                'Blog featuring webcasts and a number of IT security video programs'),
-            RWidget('images/lowPreset.png',
+            RWidget('images/resources/hackerNews.png',
+                'https://news.ycombinator.com',
+                'Hacker News',
+                "Hacker News is a social news website focusing on computer "
+                "science and entrepreneurship. It is run by the investment "
+                "fund and startup incubator Y Combinator."),
+            RWidget('images/resources/danielMiessler.png',
                 'https://danielmiessler.com',
                 'Daniel Miessler',
-                'Exploring the intersection of security, technology, '
-                'and society—and what might be coming next.'),
-            RWidget('images/lowPreset.png',
+                "Exploring the intersection of security, technology, "
+                "and society—and what might be coming next."),
+            RWidget('images/resources/itSecurityGuru.png',
                 'https://www.itsecurityguru.org',
                 'IT Security Guru',
-                'IT Security Guru is the home of IT Security and '
-                'Cybersecurity news in the UK, Europe and the World. '
-                'Get the latest industry news and articles here.'),
-            RWidget('images/lowPreset.png',
+                "IT Security Guru is the home of IT Security and "
+                "Cybersecurity news in the UK, Europe and the World. "
+                "Get the latest industry news and articles here."),
+            RWidget('images/resources/cso.png',
                 'https://www.csoonline.com',
                 'CSO',
-                'CSO serves enterprise security decision-makers and users '
-                'with the critical information they need to stay ahead of '
-                'evolving threats and defend against criminal cyberattacks.')
+                "CSO serves enterprise security decision-makers and users "
+                "with the critical information they need to stay ahead of "
+                "evolving threats and defend against criminal cyberattacks.")
             ]
 
         # Declare list of News Outlets
@@ -148,13 +152,37 @@ class ToolsTab(QWidget):
         tools_list = QWidget()
         
         tools = [
-            RWidget('images/lowPreset.png',
+            RWidget('images/resources/lookingGlass.png',
                 'https://map.lookingglasscyber.com',
                 'LookingGlass Threat Map',
-                'LookingGlass delivers the most comprehensive threat '
-                'intelligence-driven solutions in the market enabling '
-                'security teams to efficiently and effectively address '
-                'threats throughout the cyber threat lifecycle.')
+                "LookingGlass delivers the most comprehensive threat "
+                "intelligence-driven solutions in the market enabling "
+                "security teams to efficiently and effectively address "
+                "threats throughout the cyber threat lifecycle."),
+            RWidget('images/resources/hibp.png',
+                'https://haveibeenpwned.com/#:~:text=Breaches%20you%20were%20pwned%20in,your%20other%20services%20at%20risk.',
+                'Have I Been Pwned',
+                "HIBP enables you to discover if your account was exposed in "
+                "most of the data breaches by directly searching the system. "
+                "However, certain breaches are particularly sensitive in that "
+                "someone's presence in the breach may adversely impact them "
+                "if others are able to find that they were a member of the site."),
+            RWidget('images/resources/passwordMonster.png',
+                'https://www.passwordmonster.com',
+                'Password Monster',
+                "The password strength calculator uses a variety of "
+                "techniques to check how strong a password is. It uses "
+                "common password dictionaries, regular dictionaries, first "
+                "name and last name dictionaries and others"),
+            RWidget('images/resources/osintFramework.png',
+                'https://osintframework.com',
+                'OSINT Framework',
+                "OSINT framework focused on gathering information from free "
+                "tools or resources. The intention is to help people find "
+                "free OSINT resources. Some of the sites included might "
+                "require registration or offer more data for $$$, but you "
+                "should be able to get at least a portion of the available "
+                "information for no cost.")
             ]
 
         # Declare list of News Outlets
@@ -181,12 +209,34 @@ class OtherAppsTab(QWidget):
         apps_list = QWidget()
         
         apps = [
-            RWidget('images/lowPreset.png',
+            RWidget('images/resources/bitdefender.png',
                 'https://www.bitdefender.com',
                 'Bitdefender',
                 'Bitdefender provides cybersecurity solutions with leading '
                 'security efficacy, performance and ease of use to small and '
-                'medium businesses, mid-market enterprises and consumers.')
+                'medium businesses, mid-market enterprises and consumers.'),
+            RWidget('images/resources/nordvpn.png',
+                'https://nordvpn.com/cybersecurity-site',
+                'NordVPN',
+                "VPN stands for virtual private network. NordVPN keeps you "
+                "private and secure online by hiding your IP address and "
+                "routing your internet traffic through an encrypted connection "
+                "to a VPN server (instead of your ISP's servers)."),
+            RWidget('images/resources/wireshark.png',
+                'https://www.wireshark.org',
+                'Wireshark',
+                "Wireshark is the world’s foremost and widely-used network "
+                "protocol analyzer. It lets you see what’s happening on your "
+                "network at a microscopic level and is the de facto (and "
+                "often de jure) standard across many commercial and "
+                "non-profit enterprises, government agencies, and educational "
+                "institutions."),
+            RWidget('images/resources/vmware.png',
+                'https://www.vmware.com/products/workstation-player/workstation-player-evaluation.html',
+                'VMware',
+                "VMware Workstation is a line of Desktop Hypervisor products "
+                "which lets users run virtual machines, containers and "
+                "Kubernetes clusters.")
             ]
 
         # Declare list of News Outlets
