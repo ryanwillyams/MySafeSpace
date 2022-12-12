@@ -42,8 +42,10 @@ class ChangeSudoers(QWidget):
         normal_to_sudo = QPushButton("<<", clicked=self.changeNormalToSudo)
 
         # Add to VBoxlayout
+        middle_layout.addStretch()
         middle_layout.addWidget(sudo_to_normal)
         middle_layout.addWidget(normal_to_sudo)
+        middle_layout.addStretch()
 
         # Create a Wrapper for the layout
         button_wrapper = QWidget()
