@@ -22,12 +22,10 @@ class MainWindow(QMainWindow):
         tabs.setMovable(False)
 
         hardenPage = HardenMainPage()
-        servicesPage = ServicesPage()
         resourcesPage = ResourcesPage()
 
         tab_views = {
             'Harden': hardenPage,
-            'Services': servicesPage,
             'Resources': resourcesPage
         }
 
