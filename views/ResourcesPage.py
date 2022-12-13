@@ -1,8 +1,8 @@
 from PyQt6 import QtWidgets
-from PyQt6.QtWidgets import (QWidget, QTabWidget, QVBoxLayout, QListWidget,
+from PyQt6.QtWidgets import (QWidget, QTabWidget, QVBoxLayout,
     QHBoxLayout, QLabel, QScrollArea, QFrame, QSizePolicy)
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap, QPalette, QColor
+from PyQt6.QtGui import QPixmap
 
 
 
@@ -19,13 +19,13 @@ class ResourcesPage(QWidget):
         tabs.setTabPosition(QTabWidget.TabPosition.West)
 
         news = NewsTab()
-        websites = ToolsTab()
+        tools = ToolsTab()
         apps = OtherAppsTab()
 
         # Define tabs
         tab_views = {
             'New Outlets': news,
-            'Websites': websites,
+            'Tools': tools,
             'Other Apps': apps
         }
 
@@ -125,7 +125,35 @@ class NewsTab(QWidget):
                 'CSO',
                 "CSO serves enterprise security decision-makers and users "
                 "with the critical information they need to stay ahead of "
-                "evolving threats and defend against criminal cyberattacks.")
+                "evolving threats and defend against criminal cyberattacks."),
+            RWidget('images/resources/welivesecurity.png',
+                'https://www.welivesecurity.com',
+                'We Live Security',
+                "The latest news, research, cyber threats, malware "
+                "discoveries, mobile security, ransomware, and insight from "
+                "the ESET experts. WeLiveSecurity comes from the brains at "
+                "ESET - experienced researchers with in-depth knowledge of "
+                "the latest threats & security trends."),
+            RWidget('images/resources/darkreading.png',
+                'https://www.darkreading.com',
+                'DARK Reading',
+                "Cyber security's comprehensive news site is now an online "
+                "community for security professionals, outlining cyber "
+                "threats and the technologies for defending against them."),
+            RWidget('images/resources/securityweekly.png',
+                'https://www.securityweek.com',
+                'Security Weekly',
+                "Threatpost, is an independent news site which is a leading "
+                "source of information about IT and business security for "
+                "hundreds of thousands of professionals."),
+            RWidget('images/resources/threatpost.png',
+                'https://threatpost.com',
+                'Threast Post',
+                "IT Security News and Information Security News, Cyber "
+                "Security, Network Security, Enterprise Security Threats, "
+                "Cybercrime News and more. Information Security Industry "
+                "Expert insights and analysis from IT security experts "
+                "around the world.")
             ]
 
         # Declare list of News Outlets
@@ -182,7 +210,25 @@ class ToolsTab(QWidget):
                 "free OSINT resources. Some of the sites included might "
                 "require registration or offer more data for $$$, but you "
                 "should be able to get at least a portion of the available "
-                "information for no cost.")
+                "information for no cost."),
+            RWidget('images/resources/nist.png',
+                'https://nvd.nist.gov',
+                'National Vulnerability Database',
+                "The NVD is the U.S. government repository of standards "
+                "based vulnerability management data represented using the "
+                "Security Content Automation Protocol (SCAP). The NVD "
+                "includes databases of security checklist references, "
+                "security-related software flaws, misconfigurations, product "
+                "names, and impact metrics."),
+            RWidget('images/resources/mitreattack.png',
+                'https://attack.mitre.org',
+                'MITRE ATT&CK',
+                "MITRE ATT&CK® is a globally-accessible knowledge base of "
+                "adversary tactics and techniques based on real-world "
+                "observations. The ATT&CK knowledge base is used as a "
+                "foundation for the development of specific threat models "
+                "and methodologies in the private sector, in government, and "
+                "in the cybersecurity product and service community.")
             ]
 
         # Declare list of News Outlets
@@ -236,7 +282,42 @@ class OtherAppsTab(QWidget):
                 'VMware',
                 "VMware Workstation is a line of Desktop Hypervisor products "
                 "which lets users run virtual machines, containers and "
-                "Kubernetes clusters.")
+                "Kubernetes clusters."),
+            RWidget('images/resources/1password.png',
+                'https://1password.com',
+                '1Password',
+                "1Password keeps track of password breaches and other "
+                "security problems so you can keep your accounts safe. It "
+                "checks for weak, compromised, or duplicated passwords and "
+                "lets you know which sites are missing two-factor "
+                "authentication or using unsecured HTTP."),
+            RWidget('images/resources/nortonlifelock.png',
+                'https://lifelock.norton.com',
+                'LifeLock by Norton',
+                "LifeLock offers comprehensive protection against identity "
+                "theft by monitoring against easy-to-miss identity threats "
+                "(like payday loans or crimes committed in your name) as "
+                "well as identity restoration services and $1 million "
+                "coverage for lawyers and other experts if identity theft "
+                "does occur while you are a member."),
+            RWidget('images/resources/nessus.png',
+                'https://www.tenable.com/products/nessus/nessus-professional',
+                'Nessus Professional by Tenable',
+                "With more than 450 pre-built templates, you can quickly "
+                "and conveniently scan for vulnerabilities and audit "
+                "configuration compliance against CIS benchmarks or other "
+                "best practices. Ease of use is a big selling point of Nessus, "
+                "with its intuitive navigation system and overall pleasing user "
+                "experience."),
+            RWidget('images/resources/snort.png',
+                'https://www.snort.org',
+                'Snort',
+                "Snort works by using a set of rules to find packets that "
+                "match against malicious network activity and generate "
+                "alerts for users. In addition to its applications as a "
+                "full-blown network intrusion prevention system, Snort can "
+                "also be used as a packet sniffer like tcpdump or as a "
+                "packet logger.")
             ]
 
         # Declare list of News Outlets
