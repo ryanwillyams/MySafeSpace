@@ -274,7 +274,7 @@ class UIFront(QWidget):
         preset_layout.addWidget(preset_low)
 
         # LOW: Label
-        label_low = QLabel("low Security")
+        label_low = QLabel("Low Security")
         label_low.setFont(QFont('Exo 2', 20))
         label_low.resize(200, 25)
 
