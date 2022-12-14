@@ -13,7 +13,6 @@ def window(qtbot):
     new_window.show()
     return new_window
 
-
 def test_window_title(window):
     """Check that the window title shows as declared."""
     assert window.windowTitle() == 'My Safe Space'
