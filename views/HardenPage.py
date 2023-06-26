@@ -3,13 +3,17 @@ from PyQt6.QtWidgets import (
     QLabel, QPushButton, QLineEdit, QCheckBox, QSpinBox, QComboBox,
     QListWidget, QListWidgetItem, QScrollBar, QMessageBox, QTreeView
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QObject, QThread, pyqtSignal
+from PyQt6.QtGui import QPixmap, QFont, QMovie
 
 from views.passwordReqTab import PasswordReqTab
 from views.changePasswordTab import ChangePasswordTab
 from views.changeSudoers import ChangeSudoers
 from views.iptablesTab import IPTables
 from views.ServicesTab import DisableServices
+from scripts.presets import (lowPreset, medPreset, highPreset)
+from services.systemCare import runSystemCare
+from services.automatic_backups import local_backup
 
 
 class HardenMainPage(QWidget):
@@ -19,20 +23,30 @@ class HardenMainPage(QWidget):
         # Declare layout
         self.layout = QHBoxLayout()
 
+        # Define pages
         self.uiFront = UIFront()
         self.uiCustomize = UICustomize()
         self.uiLogs = UILogs()
+
+        # Define bottom button functions
         self.uiFront.btn_customize.clicked.connect(self.customizeView)
         self.uiFront.btn_logs.clicked.connect(self.logView)
         self.uiCustomize.btn_back.clicked.connect(self.frontView)
         self.uiLogs.btn_back.clicked.connect(self.frontView)
 
+        # Define Preset buttons
+        self.uiFront.btn_high.clicked.connect(lambda: self.PresetWorker('high'))
+        self.uiFront.btn_med.clicked.connect(lambda: self.PresetWorker('med'))
+        self.uiFront.btn_low.clicked.connect(lambda: self.PresetWorker('low'))
+        
+        # Add pages to layout
         self.layout.addWidget(self.uiFront)
         self.layout.addWidget(self.uiCustomize)
         self.layout.addWidget(self.uiLogs)
         self.uiCustomize.hide()
         self.uiLogs.hide()
 
+        # Set windows main layout
         self.setLayout(self.layout)
 
     def customizeView(self):
@@ -49,6 +63,115 @@ class HardenMainPage(QWidget):
         self.uiLogs.hide()
         self.uiFront.show()
 
+    def PresetWorker(self, preset):
+        self.preset_popup = PresetPopDialog()
+        self.preset_popup.setFixedSize(400, 200)
+        self.preset_popup.show()
+
+        self.preset_thread = QThread()
+        self.preset_worker = PresetWorker()
+
+        self.preset_worker.moveToThread(self.preset_thread)
+
+        if preset == 'high':
+            self.preset_thread.started.connect(self.preset_worker.runHigh)
+        elif preset == 'med':
+            self.preset_thread.started.connect(self.preset_worker.runMed)
+        elif preset == 'low':
+            self.preset_thread.started.connect(self.preset_worker.runLow)
+        
+        self.preset_worker.finished.connect(self.preset_thread.quit)
+        self.preset_worker.finished.connect(self.preset_worker.deleteLater)
+        self.preset_thread.finished.connect(self.preset_thread.deleteLater)
+        self.preset_thread.start()
+
+        self.uiFront.btn_high.setEnabled(False)
+        self.uiFront.btn_med.setEnabled(False)
+        self.uiFront.btn_low.setEnabled(False)
+        self.preset_thread.finished.connect(self.presetFinished)
+    
+    def presetFinished(self):
+        self.preset_popup.close()
+        self.uiCustomize.refreshCustomPage()
+        self.uiFront.btn_high.setEnabled(True)
+        self.uiFront.btn_med.setEnabled(True)
+        self.uiFront.btn_low.setEnabled(True)
+
+class PresetWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def runHigh(self):
+        highPreset()
+        self.finished.emit()
+    
+    def runMed(self):
+        medPreset()
+        self.finished.emit()
+
+    def runLow(self):
+        lowPreset()
+        self.finished.emit()
+
+class BackupWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        local_backup()
+        self.finished.emit()
+
+class SystemCareWorker(QObject):
+    finished = pyqtSignal()
+    progress = pyqtSignal(int)
+
+    def run(self):
+        runSystemCare()
+        self.finished.emit()
+
+class PresetPopDialog(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("Applying Preset")
+
+        outer_layout = QVBoxLayout()
+
+        self.title = QLabel('Applying Changes...')
+        self.title.setFont(QFont('Exo 2', 20))
+        self.loading = QLabel()
+        self.movie = QMovie('images/loading.gif')
+        self.loading.setMovie(self.movie)
+        self.movie.start()
+
+        outer_layout.addWidget(self.title)
+        outer_layout.addWidget(self.loading, 
+                alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(outer_layout)
+
+class SystemCarePopDialog(QWidget):
+    def __init__(self):
+        QWidget.__init__(self)
+        self.setWindowTitle("SystemCare")
+
+        outer_layout = QVBoxLayout()
+
+        self.title = QLabel('Running SystemCare...')
+        self.title.setFont(QFont('Exo 2', 20))
+        self.loading = QLabel()
+        self.movie = QMovie('images/loading.gif')
+        self.loading.setMovie(self.movie)
+        self.movie.start()
+
+        outer_layout.addWidget(self.title)
+        outer_layout.addWidget(self.loading, 
+                alignment=Qt.AlignmentFlag.AlignCenter)
+
+        outer_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setLayout(outer_layout)
+
+
 class UIFront(QWidget):
     def __init__(self):
         super(UIFront, self).__init__()
@@ -59,15 +182,89 @@ class UIFront(QWidget):
         preset_layout = QHBoxLayout()
         btn_layout = QHBoxLayout()
 
-        # Define preset layout
+        # Create help icon
+        pixmap = QPixmap('images/helpIcon.png')
+        pixmap_info_icon = pixmap.scaledToWidth(16)
+
+        # HIGH: Define preset layout
         preset_high = QWidget()
         preset_high.setMaximumSize(200, 300)
         preset_high.setStyleSheet("background-color: #353535")
 
+        # HIGH: Label
+        label_high = QLabel("High Security")
+        label_high.setFont(QFont('Exo 2', 20))
+        label_high.resize(200, 25)
+
+        # HIGH: Image
+        pic_preset_high = QLabel()
+        pixmap = QPixmap('images/highPreset.png')
+        pixmap_high = pixmap.scaledToWidth(180)
+        pic_preset_high.setPixmap(pixmap_high)
+
+        # HIGH: Button
+        self.btn_high = QPushButton("Apply")
+        self.btn_high.setMaximumHeight(25)
+
+        # HIGH: Tooltip
+        info_high = QLabel()
+        info_high.setPixmap(pixmap_info_icon)
+        info_high.setAlignment(Qt.AlignmentFlag.AlignRight)
+        info_high.setToolTip("Changes password complexity requirements\n"
+                            "Check for updates and clean junk files\n"
+                            "Disable services: Printer, Avahi server,\n"
+                            "NFS, FTP, Samba, NIS, HTTP Proxy, DHCP,\n"
+                            "DNS, Apache2, IMAP, Rsync, Bluetooth")
+
+        # HIGH: Layout
+        high_layout = QVBoxLayout()
+        high_layout.addWidget(label_high)
+        high_layout.addWidget(pic_preset_high)
+        high_layout.addStretch()
+        high_layout.addWidget(info_high)
+        high_layout.addWidget(self.btn_high)
+        preset_high.setLayout(high_layout)
+
+        # MEDIUM: Define medium preset layout
         preset_med = QWidget()
         preset_med.setMaximumSize(200, 300)
         preset_med.setStyleSheet("background-color: #353535")
 
+        # MEDIUM: Label
+        label_med = QLabel("Med Security")
+        label_med.setFont(QFont('Exo 2', 20))
+        label_med.resize(200, 25)
+
+        # MEDIUM: Image
+        pic_preset_med = QLabel()
+        pixmap = QPixmap('images/medPreset.png')
+        pixmap_med = pixmap.scaledToWidth(180)
+        pic_preset_med.setPixmap(pixmap_med)
+
+        # MEDIUM: Button
+        self.btn_med = QPushButton("Apply")
+        self.btn_med.setMaximumHeight(25)
+
+        # MEDIUM: Tooltip
+        info_med = QLabel()
+        info_med.setPixmap(pixmap_info_icon)
+        info_med.setAlignment(Qt.AlignmentFlag.AlignRight)
+        info_med.setToolTip("Changes password complexity requirements\n"
+                            "Check for updates and clean junk files\n"
+                            "Disable services: Printer, Avahi server,\n"
+                            "NFS, FTP, Samba, NIS, HTTP Proxy, IMAP\n"
+                            "Rsync, Bluetooth")
+
+        # MEDIUM: Layout
+        med_layout = QVBoxLayout()
+        med_layout.addWidget(label_med)
+        med_layout.addWidget(pic_preset_med)
+        med_layout.addStretch()
+        med_layout.addWidget(info_med)
+        med_layout.addWidget(self.btn_med)
+        preset_med.setLayout(med_layout)
+
+        # LOW: Define low preset layout
         preset_low = QWidget()
         preset_low.setMaximumSize(200, 300)
         preset_low.setStyleSheet("background-color: #353535")
@@ -76,13 +273,57 @@ class UIFront(QWidget):
         preset_layout.addWidget(preset_med)
         preset_layout.addWidget(preset_low)
 
+        # LOW: Label
+        label_low = QLabel("Low Security")
+        label_low.setFont(QFont('Exo 2', 20))
+        label_low.resize(200, 25)
+
+        # LOW: Image
+        pic_preset_low = QLabel()
+        pixmap = QPixmap('images/lowPreset.png')
+        pixmap_low = pixmap.scaledToWidth(180)
+        pic_preset_low.setPixmap(pixmap_low)
+
+        # LOW: Button
+        self.btn_low = QPushButton("Apply")
+        self.btn_low.setMaximumHeight(25)
+
+        # LOW: Tooltip
+        info_low = QLabel()
+        info_low.setPixmap(pixmap_info_icon)
+        info_low.setAlignment(Qt.AlignmentFlag.AlignRight)
+        info_low.setToolTip("Changes password complexity requirements\n"
+                            "Check for updates and clean junk files\n"
+                            "Disable services: Avahi server, NFS, FTP,\n"
+                            "Samba, NIS, HTTP Proxy, DHCP, Apache2,\n"
+                            "IMAP, Rsync")
+
+        # LOW: Layout
+        low_layout = QVBoxLayout()
+        low_layout.addWidget(label_low)
+        low_layout.addWidget(pic_preset_low)
+        low_layout.addStretch()
+        low_layout.addWidget(info_low)
+        low_layout.addWidget(self.btn_low)
+        preset_low.setLayout(low_layout)
+
         # Define btn layout
+        self.btn_systemcare = QPushButton("SystemCare")
+        self.btn_systemcare.setMaximumSize(100, 25)
+        self.btn_systemcare.clicked.connect(self.systemCare)
+
+        self.btn_auto_backup = QPushButton("Auto Backup")
+        self.btn_auto_backup.setMaximumSize(100, 25)
+        self.btn_auto_backup.clicked.connect(self.autoBackup)
+
         self.btn_customize = QPushButton("Customize")
         self.btn_customize.setMaximumSize(100, 25)
 
         self.btn_logs = QPushButton("Logs")
         self.btn_logs.setMaximumSize(100, 25)
 
+        btn_layout.addWidget(self.btn_systemcare)
+        btn_layout.addWidget(self.btn_auto_backup)
         btn_layout.addWidget(self.btn_customize)
         btn_layout.addWidget(self.btn_logs)
 
@@ -92,6 +333,45 @@ class UIFront(QWidget):
 
         # Set main window layout
         self.setLayout(outer_layout)
+
+    def autoBackup(self):
+        self.auto_thread = QThread()
+        self.auto_worker = BackupWorker()
+
+        self.auto_worker.moveToThread(self.auto_thread)
+        self.auto_thread.started.connect(self.auto_worker.run)
+        self.auto_worker.finished.connect(self.auto_thread.quit)
+        self.auto_worker.finished.connect(self.auto_worker.deleteLater)
+        self.auto_thread.finished.connect(self.auto_thread.deleteLater)
+        self.auto_thread.start()
+
+        self.btn_auto_backup.setEnabled(False)
+        self.auto_thread.finished.connect(
+            lambda: self.btn_auto_backup.setEnabled(True)
+        )
+
+    def systemCare(self):
+        self.syscare_popup = SystemCarePopDialog()
+        self.syscare_popup.setFixedSize(400, 200)
+        self.syscare_popup.show()
+
+        self.syscare_thread = QThread()
+        self.syscare_worker = SystemCareWorker()
+
+        self.syscare_worker.moveToThread(self.syscare_thread)
+        self.syscare_thread.started.connect(self.syscare_worker.run)
+        self.syscare_worker.finished.connect(self.syscare_thread.quit)
+        self.syscare_worker.finished.connect(self.syscare_worker.deleteLater)
+        self.syscare_thread.finished.connect(self.syscare_thread.deleteLater)
+        self.syscare_thread.start()
+
+        self.btn_systemcare.setEnabled(False)
+        self.syscare_thread.finished.connect(
+            lambda: self.btn_systemcare.setEnabled(True)
+        )
+        self.syscare_thread.finished.connect(
+            lambda: self.syscare_popup.close()
+        )
 
 class UICustomize(QWidget):
     def __init__(self):
@@ -111,8 +391,8 @@ class UICustomize(QWidget):
 
 
         # Scrollbar
-        list_widget = QListWidget()
-        list_widget.setMaximumWidth(180)
+        self.list_widget = QListWidget()
+        self.list_widget.setMaximumWidth(180)
 
         # Scrollbar List
         list_passReqTab = QListWidgetItem("Password Requirements")
@@ -121,12 +401,12 @@ class UICustomize(QWidget):
         list_disableServices = QListWidgetItem("Services")
         list_iptables = QListWidgetItem("IPTables")
 
-        list_widget.addItem(list_passReqTab)
-        list_widget.addItem(list_changePassTab)
-        list_widget.addItem(list_changeSudoers)
-        list_widget.addItem(list_disableServices)
-        list_widget.addItem(list_iptables)
-        list_widget.itemClicked.connect(self.change_tab)
+        self.list_widget.addItem(list_passReqTab)
+        self.list_widget.addItem(list_changePassTab)
+        self.list_widget.addItem(list_changeSudoers)
+        self.list_widget.addItem(list_disableServices)
+        self.list_widget.addItem(list_iptables)
+        self.list_widget.itemClicked.connect(self.change_tab)
 
         # Create list widgets
         self.passReqTab = PasswordReqTab()
@@ -141,8 +421,8 @@ class UICustomize(QWidget):
 
         # Scrollbar formatting
         scroll_bar = QScrollBar(self)
-        list_widget.setVerticalScrollBar(scroll_bar)
-        self.bottom_layout.addWidget(list_widget)
+        self.list_widget.setVerticalScrollBar(scroll_bar)
+        self.bottom_layout.addWidget(self.list_widget)
         self.bottom_layout.addWidget(self.tabs[0])
         self.bottom_layout.addWidget(self.tabs[1])
         self.bottom_layout.addWidget(self.tabs[2])
@@ -184,6 +464,41 @@ class UICustomize(QWidget):
                 self.tabs[self.current_tab].hide()
                 self.iptables.show()
                 self.current_tab = 4
+
+    # Refreshes custom page
+    def refreshCustomPage(self):
+        self.passReqTab.close()
+        self.changePassTab.close()
+        self.changeSudoers.close()
+        self.disableServices.close()
+        self.iptables.close()
+
+        self.passReqTab = PasswordReqTab()
+        self.changePassTab = ChangePasswordTab()
+        self.changeSudoers = ChangeSudoers()
+        self.disableServices = DisableServices()
+        self.iptables = IPTables()
+
+        self.tabs = [self.passReqTab, self.changePassTab, self.changeSudoers,
+                self.disableServices, self.iptables]
+        self.current_tab = 0
+
+        # Scrollbar formatting
+        scroll_bar = QScrollBar(self)
+        self.list_widget.setVerticalScrollBar(scroll_bar)
+        self.bottom_layout.addWidget(self.list_widget)
+        self.bottom_layout.addWidget(self.tabs[0])
+        self.bottom_layout.addWidget(self.tabs[1])
+        self.bottom_layout.addWidget(self.tabs[2])
+        self.bottom_layout.addWidget(self.tabs[3])
+        self.bottom_layout.addWidget(self.tabs[4])
+
+        # Hide all widgets besides first
+        self.changePassTab.hide()
+        self.changeSudoers.hide()
+        self.disableServices.hide()
+        self.iptables.hide()
+        pass
 
 class UILogs(QWidget):
     def __init__(self):

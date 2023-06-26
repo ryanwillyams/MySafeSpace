@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from PyQt6 import QtGui
 
+from scripts.iptables import resetRules
 from controller.ip_tables_controller import (
     viewRules, changeChainPolicy, addRule, removeRule
 )
@@ -47,6 +48,7 @@ class IPTables(QWidget):
         buttons_layout.addWidget(btn_change_policy)
         buttons_layout.addWidget(btn_add_rule)
         buttons_layout.addWidget(btn_remove_rule)
+        buttons_layout.addWidget(btn_clear_all)
 
         # Add sublayouts to main layout
         outer_layout.addWidget(self.rule_list)
@@ -74,7 +76,8 @@ class IPTables(QWidget):
         self.popup.show()
 
     def clearAllMsg(self):
-        return 0
+        resetRules()
+        self.updateRuleList()
 
     def updateRuleList(self):
         # Call when rule list changed

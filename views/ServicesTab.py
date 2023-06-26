@@ -1,3 +1,4 @@
+from os import wait
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QTreeView,
     QGroupBox, QAbstractItemView, QMenu
@@ -5,8 +6,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import (Qt, QEvent)
 from PyQt6.QtGui import QStandardItemModel
 
-from scripts.services import (getServices, startService, stopService,
-    enableService, disableService)
+from scripts.services import (getServices, getActiveStatus, getEnabledStatus, 
+    startService, stopService, enableService, disableService)
 
 #TODO: Perform a real live update
 
@@ -86,17 +87,25 @@ class ServicesTreeView(QTreeView):
         # If statement just pseudo 'updates' service. Would prefer
         # an actually reading of service status.
         if action == start_act:
-            if (startService(service_name)):
-                self.updateServiceItem(self.currentIndex().row(), 1, "active")
-                self.updateServiceItem(self.currentIndex().row(), 2, "running")
+            startService(service_name)
+            wait()
+            is_active = getActiveStatus(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 1, is_active[0])
+            self.updateServiceItem(self.currentIndex().row(), 2, is_active[1])
         elif action == stop_act:
-            if (stopService(service_name)):
-                self.updateServiceItem(self.currentIndex().row(), 1, "inactive")
-                self.updateServiceItem(self.currentIndex().row(), 2, "dead")
+            stopService(service_name)
+            wait()
+            is_active = getActiveStatus(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 1, is_active[0])
+            self.updateServiceItem(self.currentIndex().row(), 2, is_active[1])
         elif action == enable_act:
-            enableService(service_name)    
-            self.updateServiceItem(self.currentIndex().row(), 3, "enabled")
+            enableService(service_name)
+            wait()
+            is_enabled = getEnabledStatus(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 3, is_enabled)
         elif action == disable_act:
             disableService(service_name)
-            self.updateServiceItem(self.currentIndex().row(), 3, "disabled")
+            wait()
+            is_enabled = getEnabledStatus(service_name)
+            self.updateServiceItem(self.currentIndex().row(), 3, is_enabled)
                 

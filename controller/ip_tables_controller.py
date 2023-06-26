@@ -62,12 +62,12 @@ def viewRules() -> list[str]:
 
 
 def addRule(*args):
-    iptables.addRule(*args)
+    return iptables.addRule(*args)
 
 
 def removeRule(*args):
-    iptables.removeRule(*args)
+    return iptables.removeRule(*args)
 
 
 def changeChainPolicy(*args):
-    iptables.changeChainPolicy(*args)
+    return iptables.changeChainPolicy(*args)
